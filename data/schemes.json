@@ -4,7 +4,7 @@
     "name": "PM-KISAN Samman Nidhi",
     "department": "Ministry of Agriculture and Farmers Welfare, Govt of India",
     "source_url": "https://pmkisan.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:17:00Z",
     "description": "Direct financial benefit of ₹6,000 per year payable in three equal four-monthly installments to all landholding farmer families (no upper land limit since policy expansion).",
     "rules": {
       "occupation": ["farmer"],
@@ -29,7 +29,7 @@
     "name": "Mukhyamantri Majhi Ladki Bahin Yojana",
     "department": "Women & Child Development Department, Govt of Maharashtra",
     "source_url": "https://ladakibahin.maharashtra.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:22:00Z",
     "description": "Monthly direct financial assistance of ₹1,500 transferred directly to bank accounts of eligible women aged 21–65 years in Maharashtra.",
     "rules": {
       "gender": ["female"],
@@ -56,7 +56,7 @@
     "name": "Pradhan Mantri Awas Yojana - Gramin (PMAY-G)",
     "department": "Ministry of Rural Development / Rural Development Dept Maharashtra",
     "source_url": "https://pmayg.nic.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:27:00Z",
     "description": "Financial grant of ₹1.20 Lakhs (plain) to ₹1.30 Lakhs (hilly) for constructing a pucca house, plus ₹12,000 for toilet (SBM-G) and 90–95 days MGNREGA wages. Extended to March 2029 with 2 crore new houses target.",
     "rules": {
       "owns_pucca_house": false,
@@ -81,7 +81,7 @@
     "name": "Namo Shetkari Mahasanman Nidhi Yojana",
     "department": "Department of Agriculture, Govt of Maharashtra",
     "source_url": "https://namoshetkari.mahadbt.maharashtra.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:31:00Z",
     "description": "Maharashtra State top-up of ₹6,000 per year for farmers already registered under PM-KISAN, bringing total benefit to ₹12,000/year combined.",
     "rules": {
       "occupation": ["farmer"],
@@ -103,7 +103,7 @@
     "name": "Sanjay Gandhi Niradhar Anudan Yojana",
     "department": "Social Justice & Special Assistance Dept, Govt of Maharashtra",
     "source_url": "https://sjsa.maharashtra.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:36:00Z",
     "description": "Monthly pension of ₹1,500 (₹2,500 for severely disabled) for destitute persons, PwD, widows, orphans, critical illness patients, transgenders, and devadasis in Maharashtra with no income source.",
     "rules": {
       "age": { "min": 18, "max": 65 },
@@ -127,7 +127,7 @@
     "name": "Atal Pension Yojana (APY)",
     "department": "Pension Fund Regulatory and Development Authority (PFRDA), MoF",
     "source_url": "https://npscra.nsdl.co.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:41:00Z",
     "description": "Guaranteed monthly pension of ₹1,000 / ₹2,000 / ₹3,000 / ₹4,000 / ₹5,000 from age 60 based on contribution tier, with spouse pension and nominee corpus return for unorganised sector workers.",
     "rules": {
       "age": { "min": 18, "max": 40 },
@@ -148,7 +148,7 @@
     "name": "Pradhan Mantri Ujjwala Yojana (PMUY) 2.0",
     "department": "Ministry of Petroleum and Natural Gas, Govt of India",
     "source_url": "https://pmuy.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:46:00Z",
     "description": "Deposit-free LPG connection with regulator, hose, hotplate, and first refill free of cost. Ongoing ₹300/cylinder DBT subsidy for up to 12 refills/year for eligible poor households.",
     "rules": {
       "gender": ["female"],
@@ -171,7 +171,7 @@
     "name": "Mahatma Jyotirao Phule Shetkari Karjmukti Yojana (MJPSKY)",
     "department": "Co-operation, Marketing and Textiles Dept, Govt of Maharashtra",
     "source_url": "https://mjpsky.maharashtra.gov.in",
-    "last_fetched": "2026-10-31T02:38:00Z",
+    "last_fetched": "2026-10-31T02:52:00Z",
     "description": "Two-track benefit: (1) Loan waiver up to ₹2,00,000 for outstanding/defaulted short-term crop loans; (2) Incentive up to ₹50,000 for farmers with regular repayment over FY 2017-18, 2018-19, and 2019-20. No application required — fully automated via Aadhaar-linked bank records.",
     "rules": {
       "occupation": ["farmer"],
