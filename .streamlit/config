@@ -1,0 +1,17 @@
+[theme]
+# Light theme — forces Streamlit to always render in light mode
+# This ensures all custom CSS colors and HTML text are readable
+base = "light"
+
+# Primary brand color (navy blue — used for buttons, active tabs, focus rings)
+primaryColor = "#1B3A6B"
+
+# App and sidebar background — pure white so all text is guaranteed readable
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F4F6"
+
+# Text color — near-black, maximum readability
+textColor = "#111827"
+
+# Font — system native for fast load
+font = "sans serif"
