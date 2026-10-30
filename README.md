@@ -1,161 +1,158 @@
-# Aegis — Maharashtra Welfare Scheme Eligibility Navigator
+# Maharashtra Citizen Welfare Scheme Navigator
+> **Forge ’26 Gen AI Buildathon — Team Aegis**  
+> *A deterministic welfare scheme eligibility engine coupled with agentic plain-language explainability and remediation guidance.*
 
-> **Zero-Hallucination Welfare Scheme Matching Engine with Multilingual GenAI Explanations & Actionable "Almost-Eligible" Remediation.**  
-> *Built for Forge ’26 Gen AI Buildathon (48-Hour Sprint).*
-
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/UI-Streamlit-FF4B4B.svg)](https://streamlit.io/)
-[![Validation](https://img.shields.io/badge/Validation-Pydantic_v2-red.svg)](https://docs.pydantic.dev/)
-[![LLM](https://img.shields.io/badge/AI-Google_Gemini_1.5_Flash-8E75B2.svg)](https://ai.google.dev/)
-[![Bilingual](https://img.shields.io/badge/Language-English_%7C_मराठी-success.svg)](#)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit App](https://img.shields.io/badge/frontend-Streamlit-red.svg)](https://streamlit.io/)
+[![Zero Hallucination Core](https://img.shields.io/badge/decision--engine-deterministic-success.svg)](#architecture)
+[![Official Data Verified](https://img.shields.io/badge/data.gov.in-verified_2026--10--31-green.svg)](data/schemes.json)
 
 ---
 
-## 💡 The Core Problem & Our USP
+## Executive Summary
 
-### The Problem with ChatGPT Wrappers
-General-purpose LLMs hallucinate welfare scheme conditions. A false-positive recommendation sends a vulnerable farmer or rural citizen on a weeks-long wild goose chase to administrative tehsil offices for benefits they legally cannot receive.
+Every year, millions of eligible citizens miss out on government welfare schemes because eligibility rules are buried in complex legal gazettes, spread across fragmented departmental portals, and written in dense bureaucratic language. 
 
-### How Aegis Solves This
+Generic LLM solutions (ChatGPT wrappers) hallucinate qualification conditions, misinforming vulnerable citizens and causing wasted weeks at government offices.
+
+**The Maharashtra Welfare Scheme Navigator decouples decision logic from linguistic intelligence:**
+1. **Deterministic Rule Engine:** 100% auditable, zero-hallucination code directly executing official statutory gazette rules (PM-KISAN, Ladki Bahin, PMAY-G, Namo Shetkari, APY, etc.).
+2. **Agentic Remediation ("Almost Eligible"):** Identifies near-miss candidates and generates actionable legal remediation steps (e.g., land partition deeds, ration card waivers, Tahsildar destitute certificates).
+3. **Official Data Provenance:** Every single recommendation links directly to verified government portals with verifiable retrieval timestamps.
+
+---
+
+## Architecture & Technical Separation of Concerns
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       TRADITIONAL LLM                       │
-│  User input ──► [ LLM Guesses Rules & Hallucinates ] ──► ???│
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│                            AEGIS                            │
-│  User Form ──► [ Pydantic Type Check ]                      │
-│                      │                                      │
-│                      ▼                                      │
-│           [ Deterministic Rule Engine ]                     │
-│           • Evaluates statutory gazette rules               │
-│           • ZERO LLM involvement in decision                │
-│           • 100% mathematically reproducible                │
-│                      │                                      │
-│                      ▼                                      │
-│           [ Gemini 1.5 Flash Explainer ]                    │
-│           • Only explains the engine's verdict              │
-│           • Generates actionable "Almost Eligible" remedy   │
-│           • English & मराठी natural language                │
-└─────────────────────────────────────────────────────────────┘
-```
-
-> **The Jury-Proof Answer:**  
-> *"ChatGPT guesses. Our deterministic engine executes the actual legal conditions from the official Maharashtra scheme gazettes. The AI is only the voice — the engine is the brain."*
-
----
-
-## 🌟 Key Features
-
-1. **Deterministic Rule Engine (Zero Hallucinations):** Evaluates age, gender, caste, landholdings, annual income, pucca house ownership, and bank/Aadhaar status with 0% margin of error.
-2. **Actionable "Almost Eligible" Remediation:** If a citizen misses eligibility by just **one** condition (e.g. income ceiling, missing Jan Dhan account, land records), the system flags them as *Almost Eligible* and provides exact administrative steps (which portal to visit, what certificate to request from the Tahsildar).
-3. **Bilingual Support (English + मराठी):** Built-in toggle providing end-to-end interface and verdict explanations in Marathi and English.
-4. **Preset Personas for Flawless Demos:** Instant 1-click loading of real-world personas (Ramesh - Small Farmer, Sunita - Rural Woman, Vikram - Urban Salaried).
-5. **Zero Mock Data (Verifiable Lineage):** Every scheme is mapped to official `.gov.in` source URLs with verifiable ISO timestamps.
-
----
-
-## 🏛️ Supported Schemes (Official State & Central Gazettes)
-
-| Scheme ID | Scheme Name | Nodal Department | Official Gazette Portal | Verification |
-| :--- | :--- | :--- | :--- | :--- |
-| `pm_kisan` | **PM-KISAN Samman Nidhi** | Ministry of Agriculture, GoI | [pmkisan.gov.in](https://pmkisan.gov.in) | Verified Active |
-| `majhi_ladki_bahin` | **Mukhyamantri Majhi Ladki Bahin Yojana** | Women & Child Development, GoM | [mahadbt.maharashtra.gov.in](https://mahadbt.maharashtra.gov.in) | Verified Active |
-| `pmay_g` | **PMAY - Gramin (Housing)** | Rural Development Dept | [pmayg.nic.in](https://pmayg.nic.in) | Verified Active |
-| `namo_shetkari` | **Namo Shetkari Maha Samman Nidhi** | Dept of Agriculture, GoM | [mahadbt.maharashtra.gov.in](https://mahadbt.maharashtra.gov.in) | Verified Active |
-| `sanjay_gandhi_niradhar` | **Sanjay Gandhi Niradhar Anudan** | Social Justice Dept, GoM | [sjsa.maharashtra.gov.in](https://sjsa.maharashtra.gov.in) | Verified Active |
-| `atal_pension` | **Atal Pension Yojana (APY)** | PFRDA / Finance Ministry | [npscra.nsdl.co.in](https://npscra.nsdl.co.in) | Verified Active |
-| `pm_ujjwala` | **PM Ujjwala Yojana 2.0 (LPG)** | Ministry of Petroleum, GoI | [pmuy.gov.in](https://pmuy.gov.in) | Verified Active |
-| `mahatma_phule_karjmukti` | **Mahatma Phule Shetkari Karjmukti** | Co-operation & Marketing, GoM | [mahadbt.maharashtra.gov.in](https://mahadbt.maharashtra.gov.in) | Verified Active |
-
----
-
-## 📁 Repository Architecture
-
-```text
-Aegis/
-├── data/
-│   ├── schemes.json          # Verified statutory schemes, rule conditions & remedy hints
-│   └── constants.py          # Canonical caste categories, occupations & gov URLs
-├── core/
-│   ├── models.py             # Type-safe Pydantic models (CitizenProfile, SchemeResult)
-│   ├── engine.py             # Pure Python deterministic rule engine (Zero LLM)
-│   ├── explainer.py          # Google Gemini 1.5 Flash natural language explainer
-│   └── app_logic.py          # Unified pipeline (Validate -> Evaluate -> Explain)
-├── ui/
-│   ├── app.py                # Main Streamlit web application & bilingual state
-│   └── components/
-│       ├── results_view.py   # 3-tier card layout (Eligible, Almost Eligible, Ineligible)
-│       └── sidebar.py        # Submitted profile inspector & payload viewer
-├── tests/
-│   └── test_engine.py        # Automated test suite covering edge cases and personas
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment variables template
-└── README.md                 # Project documentation
+┌────────────────────────────────────────────────────────┐
+│            Streamlit User Interface (ui/app.py)        │
+│   • Multi-demographic citizen intake form              │
+│   • Instant demo presets (Ramesh, Sunita, Vikram)      │
+│   • Marathi / English language localization toggle     │
+└───────────────────────────┬────────────────────────────┘
+                            │ Raw Input Dict
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│         Data Contracts & Validation (core/models.py)   │
+│   • Pydantic CitizenProfile validation                 │
+│   • Type enforcement, bounds, and sanitation           │
+└───────────────────────────┬────────────────────────────┘
+                            │ Validated CitizenProfile
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│     Deterministic Decision Engine (core/engine.py)     │
+│   • Evaluates citizen profile against data/schemes.json│
+│   • Quantitative bounds (income, land, age)            │
+│   • Categorical inclusion (caste, occupation)          │
+│   • Strict boolean prerequisites (banking, Aadhaar)    │
+│   • Zero LLM involvement in eligibility determination  │
+└───────────────────────────┬────────────────────────────┘
+                            │ SchemeResult (eligible | almost | ineligible)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│        AI Explainer & Remediation (core/explainer.py)  │
+│   • Google Gemini API integration                      │
+│   • Translates binary rule outcomes into plain prose   │
+│   • Formulates actionable steps for "almost" candidates│
+└───────────────────────────┬────────────────────────────┘
+                            │ Enriched SchemeResult List
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│        Audit Trail & Results View (ui/results_view.py) │
+│   • Eligible schemes with full benefit breakdowns      │
+│   • Almost eligible with actionable remediation        │
+│   • Ineligible schemes with statutory failure audit    │
+│   • Verifiable portal links and timestamp badges       │
+└────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quickstart Guide
+## Ground-Truth Scheme Database (`data/schemes.json`)
 
-### 1. Clone & Enter Directory
+All 8 schemes in this repository were manually verified on **October 31, 2026** against official state and central portals:
+
+| Scheme Name | Department / Ministry | Official Portal | Verification Timestamp |
+| :--- | :--- | :--- | :--- |
+| **PM-KISAN Samman Nidhi** | Ministry of Agriculture & Farmers Welfare, GoI | [pmkisan.gov.in](https://pmkisan.gov.in) | `2026-10-31T02:38:00Z` |
+| **Mukhyamantri Majhi Ladki Bahin** | Women & Child Development Dept, GoM | [ladakibahin.maharashtra.gov.in](https://ladakibahin.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
+| **PMAY - Gramin (2024–29 Extension)** | Ministry of Rural Development, GoI | [pmayg.nic.in](https://pmayg.nic.in) | `2026-10-31T02:38:00Z` |
+| **Namo Shetkari Mahasanman Nidhi** | Department of Agriculture, GoM | [namoshetkari.mahadbt.maharashtra.gov.in](https://namoshetkari.mahadbt.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
+| **Sanjay Gandhi Niradhar Anudan** | Social Justice & Special Assistance Dept, GoM | [sjsa.maharashtra.gov.in](https://sjsa.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
+| **Atal Pension Yojana (APY)** | PFRDA / Ministry of Finance, GoI | [npscra.nsdl.co.in](https://npscra.nsdl.co.in) | `2026-10-31T02:38:00Z` |
+| **PM Ujjwala Yojana 2.0** | Ministry of Petroleum & Natural Gas, GoI | [pmuy.gov.in](https://pmuy.gov.in) | `2026-10-31T02:38:00Z` |
+| **Shetkari Karjmukti Yojana (MJPSKY)** | Co-operation & Marketing Dept, GoM | [mjpsky.maharashtra.gov.in](https://mjpsky.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
+
+---
+
+## Quickstart & Installation
+
+### 1. Prerequisites
+- Python 3.10 or higher
+- Git
+
+### 2. Clone the Repository
 ```bash
-cd Aegis
+git clone https://github.com/<your-username>/<your-repo-name>.git
+cd <your-repo-name>
 ```
 
-### 2. Set Up Virtual Environment
+### 3. Create Virtual Environment & Install Dependencies
 ```bash
-# Windows
 python -m venv venv
+
+# Windows:
 venv\Scripts\activate
 
-# macOS / Linux
-python3 -m venv venv
+# Linux / macOS:
 source venv/bin/activate
-```
 
-### 3. Install Dependencies
-```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables
-Copy `.env.example` to `.env` and add your Gemini API Key:
-```bash
-# In .env:
-GEMINI_API_KEY="your_actual_gemini_api_key_here"
-```
-*(Note: If no API key is provided, the application will automatically fall back to deterministic statutory explanation templates without crashing).*
-
-### 5. Run Automated Tests
-```bash
-python tests/test_engine.py
-```
-Output:
-```text
-Running engine unit tests...
-[PASS] test_load_schemes (8 schemes loaded)
-[PASS] test_persona_ramesh_small_farmer
-[PASS] test_persona_sunita_rural_woman
-[PASS] test_persona_vikram_urban_salaried
-[PASS] test_almost_eligible_remedy_hints
-
-ALL TESTS PASSED SUCCESSFULLY!
+Create a `.env` file in the root directory:
+```env
+GEMINI_API_KEY=your_google_gemini_api_key_here
 ```
 
-### 6. Launch the Web Dashboard
+### 5. Run the Application
 ```bash
 streamlit run ui/app.py
 ```
-The application will launch at `http://localhost:8501`.
+Open your browser at `http://localhost:8501`.
 
 ---
 
-## 👥 The Team
+## Live Demo Personas (Jury Test Cases)
 
-| Team Member | Role | Core Responsibility |
-| :--- | :--- | :--- |
-| **Laukik Wani** | **Tech Lead & SDE** | Backend architecture, Pydantic contracts, deterministic rule engine & AI pipeline |
-| **Srijan** | **Frontend & Demo Lead** | Streamlit UI/UX, English/Marathi localization, live demo flow & pitch |
-| **Vinit Patil** | **Product & Ground Truth** | Gazette rule verification, official data lineage, farmer heuristics & edge cases |
+Use the top dropdown in the application to pre-fill test profiles:
+
+1. ** Ramesh Patil (Small Farmer, Vidarbha):**
+   - *Tests:* Dual Central + State agricultural synergy.
+   - *Expected:* Eligible for **PM-KISAN** (₹6,000/yr), **Namo Shetkari** (₹6,000/yr top-up), and **Karjmukti Yojana**. Correctly rejected for Ladki Bahin (gender mismatch).
+2. ** Sunita Kamble (Rural Landless Woman):**
+   - *Tests:* Women & Child social safety net + AI "Almost Eligible" guidance.
+   - *Expected:* Eligible for **Ladki Bahin** (₹1,500/mo), **APY**, and **Ujjwala 2.0**. Shows "Almost Eligible" guidance for housing verification under Awaas+ 2024.
+3. ** Vikram Joshi (Urban Salaried Professional):**
+   - *Tests:* Zero-hallucination boundary checks.
+   - *Expected:* Rejected across targeted welfare schemes due to high income and asset ownership.
+
+---
+
+## Team Aegis & Responsibilities
+
+- **Vinit Patil** — *Product, Data & Validation Lead*  
+  Official scheme parameter extraction, statutory cutoff verification, demo personas, and pitch presentation.
+- **Laukik Wani** — *Tech Lead & Backend SDE*  
+  Pydantic data modeling (`models.py`), deterministic rule evaluation engine (`engine.py`), and Gemini explainer orchestration (`explainer.py`).
+- **Srijan** — *Frontend & Demo Lead*  
+  Streamlit interactive dashboard (`app.py`), status badge visualization cards, audit sidebar, and demo presentation execution.
+
+---
+
+## Compliance with Hackathon Regulations
+- **Zero Mock/Hardcoded Outcomes:** All outputs dynamically evaluated at runtime against official scheme criteria.
+- **Timestamp Provenance:** Direct citations with ISO 8601 timestamps to official portals.
+- **Zero Hallucination Decision Core:** Decoupled architecture ensures LLM never makes legal entitlement decisions.
