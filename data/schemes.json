@@ -1,0 +1,149 @@
+[
+  {
+    "scheme_id": "pm_kisan",
+    "name": "PM-KISAN Samman Nidhi",
+    "department": "Ministry of Agriculture & Farmers Welfare, Government of India",
+    "source_url": "https://pmkisan.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Direct income support of ₹6,000 per year in three equal installments to small and marginal farmer families.",
+    "rules": {
+      "occupation": ["farmer"],
+      "land_holding_hectares": { "min": 0.01, "max": 2.0 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "land_holding_hectares": "Your land holding must be under 2.0 hectares. If you jointly own land, partition records (7/12 extract) showing your individual share may bring you within the limit.",
+      "has_bank_account": "You need a bank account linked to Aadhaar. Nearest Jan Dhan Yojana center or post office can open one same-day.",
+      "has_aadhaar": "Aadhaar enrollment is mandatory. Visit the nearest Common Service Centre (CSC) or Aaple Sarkar Seva Kendra for enrollment.",
+      "occupation": "Scheme is strictly reserved for agricultural landholder farmers."
+    }
+  },
+  {
+    "scheme_id": "majhi_ladki_bahin",
+    "name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+    "department": "Women and Child Development Department, Government of Maharashtra",
+    "source_url": "https://mahadbt.maharashtra.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Financial assistance of ₹1,500 per month directly transferred to women residents of Maharashtra.",
+    "rules": {
+      "gender": ["female"],
+      "age": { "min": 21, "max": 65 },
+      "annual_income": { "max": 250000 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "annual_income": "Annual family income must be under ₹2.5 Lakh. You will require an official Tehsildar income certificate or yellow/orange ration card.",
+      "age": "Applicant must be between 21 and 65 years of age on the date of application.",
+      "gender": "This scheme is exclusively for women residing in Maharashtra.",
+      "has_bank_account": "An active Aadhaar-seeded bank account (DBT enabled) is required."
+    }
+  },
+  {
+    "scheme_id": "pmay_g",
+    "name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+    "department": "Ministry of Rural Development / Rural Development Dept Maharashtra",
+    "source_url": "https://pmayg.nic.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Financial assistance of ₹1.20 Lakh to ₹1.30 Lakh to construct a pucca house with basic amenities.",
+    "rules": {
+      "owns_pucca_house": false,
+      "annual_income": { "max": 120000 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "owns_pucca_house": "Beneficiary family must not own a pucca house in their name anywhere in India.",
+      "annual_income": "Income ceiling requires BPL/SECC categorization. Contact your Gram Panchayat to verify your SECC 2011 priority listing."
+    }
+  },
+  {
+    "scheme_id": "namo_shetkari",
+    "name": "Namo Shetkari Maha Samman Nidhi",
+    "department": "Department of Agriculture, Government of Maharashtra",
+    "source_url": "https://mahadbt.maharashtra.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Additional top-up grant of ₹6,000 per year from Maharashtra Government to PM-KISAN beneficiary farmers.",
+    "rules": {
+      "occupation": ["farmer"],
+      "land_holding_hectares": { "min": 0.01, "max": 2.0 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "occupation": "Beneficiary must be registered under PM-KISAN in Maharashtra.",
+      "land_holding_hectares": "Must hold verifiable agricultural land up to 2.0 Ha on your 7/12 extract."
+    }
+  },
+  {
+    "scheme_id": "sanjay_gandhi_niradhar",
+    "name": "Sanjay Gandhi Niradhar Anudan Yojana",
+    "department": "Social Justice and Special Assistance Department, Maharashtra",
+    "source_url": "https://sjsa.maharashtra.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Monthly pension of ₹1,500 to destitute persons, blind, disabled, and senior citizens.",
+    "rules": {
+      "age": { "min": 65 },
+      "annual_income": { "max": 21000 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "age": "Senior citizen eligibility starts at 65 years. Alternatively, a 40%+ disability certificate exempts the age requirement.",
+      "annual_income": "Destitute income limit is strictly ₹21,000/year, certified by the Tehsildar."
+    }
+  },
+  {
+    "scheme_id": "atal_pension",
+    "name": "Atal Pension Yojana (APY)",
+    "department": "Pension Fund Regulatory and Development Authority (PFRDA)",
+    "source_url": "https://npscra.nsdl.co.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Guaranteed monthly pension of ₹1,000 to ₹5,000 starting at age 60 for unorganized sector workers.",
+    "rules": {
+      "age": { "min": 18, "max": 40 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "age": "Entry age for APY is strictly between 18 and 40 years. For individuals above 40, explore PM-SYM or NPS Lite."
+    }
+  },
+  {
+    "scheme_id": "pm_ujjwala",
+    "name": "Pradhan Mantri Ujjwala Yojana 2.0",
+    "department": "Ministry of Petroleum and Natural Gas, Government of India",
+    "source_url": "https://pmuy.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Free LPG connection with first refill and stove provided to adult women of poor households.",
+    "rules": {
+      "gender": ["female"],
+      "age": { "min": 18 },
+      "caste_category": ["sc", "st", "obc", "nt", "vjnt"],
+      "annual_income": { "max": 150000 },
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "gender": "LPG connection under Ujjwala 2.0 can only be issued in the name of an adult woman member of the household.",
+      "caste_category": "General category households require a verified BPL ration card or Antyodaya Anna Yojana (AAY) enrollment."
+    }
+  },
+  {
+    "scheme_id": "mahatma_phule_karjmukti",
+    "name": "Mahatma Jyotirao Phule Shetkari Karjmukti Yojana",
+    "department": "Co-operation, Marketing and Textiles Department, Maharashtra",
+    "source_url": "https://mahadbt.maharashtra.gov.in",
+    "last_fetched": "2026-10-31T01:00:00Z",
+    "description": "Debt waiver and incentive relief up to ₹50,000 for farmers regularly repaying short-term crop loans.",
+    "rules": {
+      "occupation": ["farmer"],
+      "has_bank_account": true,
+      "has_aadhaar": true
+    },
+    "almost_eligible_hints": {
+      "occupation": "Applicable strictly to farmers holding short-term crop loans (Pik Karj) in cooperative or commercial banks in Maharashtra."
+    }
+  }
+]
