@@ -35,7 +35,14 @@ init_form_state()
 
 # ── Sidebar: Logo Pinned Top, Language, Dark Mode, Portals, Profile ─────
 active_profile = st.session_state.get("submitted_profile")
-lang, is_marathi, dark_mode = render_sidebar(profile=active_profile)
+sidebar_res = render_sidebar(profile=active_profile)
+if sidebar_res and isinstance(sidebar_res, (tuple, list)) and len(sidebar_res) >= 3:
+    lang, is_marathi, dark_mode = sidebar_res[0], sidebar_res[1], sidebar_res[2]
+else:
+    lang = st.session_state.get("unified_app_lang", "English")
+    is_marathi = (lang == "मराठी")
+    dark_mode = st.session_state.get("unified_dark_mode", False)
+
 if dark_mode:
     st.markdown(DARK_CSS, unsafe_allow_html=True)
 

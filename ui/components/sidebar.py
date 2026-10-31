@@ -2,12 +2,22 @@
 """Left sidebar: govt logo pinned at top, unified language, dark mode, portals, profile."""
 import streamlit as st
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any
 from core.models import CitizenProfile
 from data.constants import INCOME_CERTIFICATE_URL, AADHAAR_ENROLLMENT_URL, JAN_DHAN_URL
 
 # Resolve official Maharashtra seal logo relative to project root
 _LOGO_PATH = Path(__file__).resolve().parent.parent.parent / "logo_MH.png"
+
+
+def _safe_get(obj: Any, key: str, default: Any = "") -> Any:
+    """Safely extract field from either a Pydantic model or a dictionary."""
+    if hasattr(obj, key):
+        val = getattr(obj, key)
+        return val if val is not None else default
+    elif isinstance(obj, dict):
+        return obj.get(key, default)
+    return default
 
 
 def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool, bool]:
@@ -17,13 +27,18 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
     2. Header Title
     3. Single Unified Language Selector (controls page text AND voice language)
     4. Dark Mode Toggle
-    5. Official Portals
-    6. System Architecture Note
-    7. Active Applicant Profile (when available)
+    5. Active Applicant Profile (when available)
+    6. Official Portals
+    7. System Architecture Note
     
     Returns:
         (lang, is_marathi, dark_mode)
     """
+    # Safe fallback defaults
+    lang = st.session_state.get("unified_app_lang", "English")
+    is_marathi = (lang == "मराठी")
+    dark_mode = st.session_state.get("unified_dark_mode", False)
+
     with st.sidebar:
         # ── 1. Government Seal Logo (Pinned at top) ──────────────────────
         if _LOGO_PATH.exists():
@@ -77,15 +92,22 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
                 f"</div>",
                 unsafe_allow_html=True,
             )
+            p_name = _safe_get(profile, "name", "Applicant")
+            p_age = _safe_get(profile, "age", 30)
+            p_gender = str(_safe_get(profile, "gender", "other")).capitalize()
+            p_income = _safe_get(profile, "annual_income", 0)
+            p_caste = str(_safe_get(profile, "caste_category", "general")).upper()
+            p_land = _safe_get(profile, "land_holding_hectares", 0.0)
+            p_occ = str(_safe_get(profile, "occupation", "farmer")).replace("_", " ").capitalize()
+
             rows = [
-                ("Name"       if not is_marathi else "नाव",             profile.name),
-                ("Age"        if not is_marathi else "वय",              f"{profile.age} years" if not is_marathi else f"{profile.age} वर्षे"),
-                ("Gender"     if not is_marathi else "लिंग",            profile.gender.capitalize()),
-                ("Income"     if not is_marathi else "वार्षिक उत्पन्न", f"Rs. {profile.annual_income:,.0f}"),
-                ("Caste"      if not is_marathi else "जात",             profile.caste_category.upper()),
-                ("Land"       if not is_marathi else "जमीन",            f"{profile.land_holding_hectares} Ha"),
-                ("Occupation" if not is_marathi else "व्यवसाय",
-                 profile.occupation.replace("_", " ").capitalize()),
+                ("Name"       if not is_marathi else "नाव",             p_name),
+                ("Age"        if not is_marathi else "वय",              f"{p_age} years" if not is_marathi else f"{p_age} वर्षे"),
+                ("Gender"     if not is_marathi else "लिंग",            p_gender),
+                ("Income"     if not is_marathi else "वार्षिक उत्पन्न", f"Rs. {float(p_income):,.0f}"),
+                ("Caste"      if not is_marathi else "जात",             p_caste),
+                ("Land"       if not is_marathi else "जमीन",            f"{p_land} Ha"),
+                ("Occupation" if not is_marathi else "व्यवसाय",         p_occ),
             ]
             table_rows = "".join(
                 f"<tr>"
@@ -151,4 +173,4 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
                 unsafe_allow_html=True,
             )
 
-    return lang, is_marathi, dark_mode
+    return (lang, is_marathi, dark_mode)
