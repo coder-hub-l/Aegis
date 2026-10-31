@@ -1,20 +1,43 @@
 # core/explainer.py
 import os
-import google.generativeai as genai
 from dotenv import load_dotenv
 from core.models import SchemeResult
 
 load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
+
+# ── API Key: supports both Streamlit Cloud secrets and local .env ─────────
+def _get_api_key() -> str:
+    """Read GEMINI_API_KEY from st.secrets (Cloud) or .env (local)."""
+    try:
+        import streamlit as st
+        key = st.secrets.get("GEMINI_API_KEY", "")
+        if key:
+            return key
+    except Exception:
+        pass
+    return os.getenv("GEMINI_API_KEY", "")
+
+# Safely import Gemini — falls back to deterministic messages if package missing
+try:
+    import google.generativeai as genai
+    _initial_key = _get_api_key()
+    if _initial_key:
+        genai.configure(api_key=_initial_key)
+    _GENAI_AVAILABLE = True
+except Exception:
+    genai = None  # type: ignore
+    _GENAI_AVAILABLE = False
 
 
 def get_model():
     """Lazily initialize and return the generative model if configured."""
-    if not os.getenv("GEMINI_API_KEY"):
+    if not _GENAI_AVAILABLE:
+        return None
+    api_key = _get_api_key()
+    if not api_key:
         return None
     try:
+        genai.configure(api_key=api_key)
         return genai.GenerativeModel("gemini-1.5-flash")
     except Exception:
         return None

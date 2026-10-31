@@ -1,9 +1,46 @@
 # core/engine.py
 import json
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from core.models import CitizenProfile, SchemeResult
-from data.constants import SCHEME_TRANSLATIONS
+try:
+    from data.constants import SCHEME_TRANSLATIONS, PORTAL_URLS
+except Exception:
+    SCHEME_TRANSLATIONS = {}
+    PORTAL_URLS = {}
+
+
+# Official portals to ping for live-data provenance badge
+_PROBE_PORTALS = [
+    ("PM-KISAN",     "https://pmkisan.gov.in"),
+    ("MahaDBT",      "https://mahadbt.maharashtra.gov.in"),
+    ("Aaple Sarkar", "https://aaplesarkar.mahaonline.gov.in"),
+]
+
+
+def check_portal_health(timeout: int = 4) -> Tuple[bool, List[Dict[str, Any]]]:
+    """
+    Ping official .gov.in portals via HTTP HEAD to prove live backend connectivity.
+    Returns (all_ok: bool, results: list of {name, url, status, ok}).
+    Falls back gracefully if requests is unavailable or network is blocked.
+    """
+    try:
+        import requests
+    except ImportError:
+        return False, [{"name": p[0], "url": p[1], "status": "requests not installed", "ok": False}
+                       for p in _PROBE_PORTALS]
+
+    results = []
+    for name, url in _PROBE_PORTALS:
+        try:
+            resp = requests.head(url, timeout=timeout, allow_redirects=True)
+            ok = resp.status_code < 500
+            results.append({"name": name, "url": url, "status": resp.status_code, "ok": ok})
+        except Exception as e:
+            results.append({"name": name, "url": url, "status": str(e)[:60], "ok": False})
+
+    all_ok = all(r["ok"] for r in results)
+    return all_ok, results
 
 
 def load_schemes() -> List[Dict[str, Any]]:

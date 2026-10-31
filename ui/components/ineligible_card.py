@@ -2,7 +2,10 @@
 """Renders a single compact red card for ineligible schemes with transparent failure reasons."""
 import streamlit as st
 from core.models import SchemeResult
-from data.constants import SCHEME_TRANSLATIONS
+try:
+    from data.constants import SCHEME_TRANSLATIONS
+except Exception:
+    SCHEME_TRANSLATIONS = {}
 
 
 def render_ineligible_card(r: SchemeResult, is_marathi: bool):

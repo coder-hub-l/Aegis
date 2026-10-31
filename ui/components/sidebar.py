@@ -20,17 +20,55 @@ def _safe_get(obj: Any, key: str, default: Any = "") -> Any:
     return default
 
 
+def _render_portal_sync_badge(is_marathi: bool) -> None:
+    """
+    Show a Live Portal Sync Status badge proving real .gov.in connectivity.
+    Cached for 5 minutes so HTTP probes run once per session.
+    """
+    try:
+        from core.engine import check_portal_health
+
+        @st.cache_data(ttl=300, show_spinner=False)
+        def _cached_health():
+            return check_portal_health(timeout=4)
+
+        all_ok, portal_results = _cached_health()
+        ok_count = sum(1 for r in portal_results if r["ok"])
+        total = len(portal_results)
+
+        if all_ok:
+            colour, icon, label = "#15803D", "&#10003;", "Live Portal Sync: Connected"
+            bg, border = "#F0FDF4", "#86EFAC"
+        else:
+            colour, icon, label = "#B45309", "&#9888;", f"Portal Sync: {ok_count}/{total} OK"
+            bg, border = "#FFFBEB", "#FDE68A"
+
+        display_label = ("लाइव पोर्टल: कनेक्टेड" if all_ok else f"पोर्टल: {ok_count}/{total} OK") \
+                        if is_marathi else label
+
+        st.markdown(
+            f"<div style='background:{bg}; border:1px solid {border}; border-radius:5px; "
+            f"padding:6px 10px; font-size:11px; font-weight:700; color:{colour}; "
+            f"margin-bottom:12px; text-align:center;'>"
+            f"{icon} {display_label}</div>",
+            unsafe_allow_html=True,
+        )
+    except Exception:
+        pass  # Never crash the sidebar over a status badge
+
+
 def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool, bool]:
     """
     Renders the unified left sidebar in strict authoritative order:
     1. Maharashtra Government Seal
     2. Header Title
-    3. Single Unified Language Selector (controls page text AND voice language)
-    4. Dark Mode Toggle
-    5. Active Applicant Profile (when available)
-    6. Official Portals
-    7. System Architecture Note
-    
+    3. Live Portal Sync Status Badge
+    4. Single Unified Language Selector (controls page text AND voice language)
+    5. Dark Mode Toggle
+    6. Active Applicant Profile (when available)
+    7. Official Portals
+    8. System Architecture Note
+
     Returns:
         (lang, is_marathi, dark_mode)
     """
@@ -62,7 +100,10 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
             unsafe_allow_html=True,
         )
 
-        # ── 3. Unified Language Selector (Page + Voice) ──────────────────
+        # ── 3. Live Portal Sync Status Badge ─────────────────────────────
+        _render_portal_sync_badge(is_marathi)
+
+        # ── 4. Unified Language Selector (Page + Voice) ──────────────────
         lang = st.radio(
             "Language / भाषा",
             ["English", "मराठी"],
@@ -71,7 +112,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
         )
         is_marathi = (lang == "मराठी")
 
-        # ── 4. Dark Mode Toggle ──────────────────────────────────────────
+        # ── 5. Dark Mode Toggle ──────────────────────────────────────────
         dark_mode = st.toggle(
             "Dark Mode" if not is_marathi else "डार्क मोड",
             value=False,
@@ -83,7 +124,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
             unsafe_allow_html=True,
         )
 
-        # ── 5. Active Applicant Profile (Rendered when submitted) ────────
+        # ── 6. Active Applicant Profile (Rendered when submitted) ────────
         if profile:
             st.markdown(
                 f"<div style='font-size:11px; font-weight:700; color:#6B7280; "
@@ -126,7 +167,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
                 unsafe_allow_html=True,
             )
 
-        # ── 6. Official Portals ──────────────────────────────────────────
+        # ── 7. Official Portals ──────────────────────────────────────────
         st.markdown(
             f"<div style='font-size:11px; font-weight:700; color:#6B7280; "
             f"text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px;'>"
@@ -155,7 +196,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
             unsafe_allow_html=True,
         )
 
-        # ── 7. Technical Architecture Note ───────────────────────────────
+        # ── 8. Technical Architecture Note ───────────────────────────────
         with st.expander("System Architecture" if not is_marathi else "प्रणाली रचना"):
             st.markdown(
                 """

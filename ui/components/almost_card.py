@@ -3,7 +3,10 @@
 import streamlit as st
 from core.models import SchemeResult
 from ui.components.tts_button import render_tts_button
-from data.constants import SCHEME_TRANSLATIONS
+try:
+    from data.constants import SCHEME_TRANSLATIONS
+except Exception:
+    SCHEME_TRANSLATIONS = {}
 
 
 def render_almost_card(r: SchemeResult, is_marathi: bool):

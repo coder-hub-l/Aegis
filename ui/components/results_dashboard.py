@@ -8,7 +8,10 @@ from ui.components.almost_card import render_almost_card
 from ui.components.ineligible_card import render_ineligible_card
 from ui.components.report_builder import build_text_report
 from ui.components.whatsapp_sender import render_whatsapp_button
-from data.constants import SCHEME_TRANSLATIONS
+try:
+    from data.constants import SCHEME_TRANSLATIONS
+except Exception:
+    SCHEME_TRANSLATIONS = {}
 
 
 def render_results(results: List[SchemeResult], lang: str = "English", profile: Optional[CitizenProfile] = None):
