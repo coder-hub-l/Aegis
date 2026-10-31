@@ -7,21 +7,23 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.models import CitizenProfile
-from core.engine import run_engine, evaluate_scheme, load_schemes
+from core.engine import run_engine, load_schemes
 
 
 def test_load_schemes():
     """Verify schemes.json is valid and contains expected schemes."""
     schemes = load_schemes()
-    assert len(schemes) >= 5, f"Expected at least 5 schemes, found {len(schemes)}"
+    assert len(schemes) == 8, f"Expected 8 schemes, found {len(schemes)}"
     scheme_ids = [s["scheme_id"] for s in schemes]
     assert "pm_kisan" in scheme_ids
-    assert "majhi_ladki_bahin" in scheme_ids
+    assert "ladki_bahin" in scheme_ids
+    assert "pmay_gramin" in scheme_ids
+    assert "namo_shetkari" in scheme_ids
     print(f"[PASS] test_load_schemes ({len(schemes)} schemes loaded)")
 
 
 def test_persona_ramesh_small_farmer():
-    """Ramesh should qualify for PM-KISAN and Namo Shetkari."""
+    """Ramesh should qualify for PM-KISAN, Namo Shetkari, and MJPSKY."""
     ramesh = CitizenProfile(
         name="Ramesh Patil",
         age=45,
@@ -30,6 +32,7 @@ def test_persona_ramesh_small_farmer():
         caste_category="obc",
         land_holding_hectares=1.5,
         occupation="farmer",
+        state="Maharashtra",
         has_bank_account=True,
         has_aadhaar=True,
         owns_pucca_house=False
@@ -39,20 +42,21 @@ def test_persona_ramesh_small_farmer():
 
     assert results_map.get("pm_kisan") == "eligible", f"Expected eligible, got {results_map.get('pm_kisan')}"
     assert results_map.get("namo_shetkari") == "eligible", f"Expected eligible, got {results_map.get('namo_shetkari')}"
-    assert results_map.get("majhi_ladki_bahin") == "ineligible"  # Male applicant
+    assert results_map.get("ladki_bahin") == "ineligible"  # Male applicant
     print("[PASS] test_persona_ramesh_small_farmer")
 
 
 def test_persona_sunita_rural_woman():
-    """Sunita should qualify for Majhi Ladki Bahin."""
+    """Sunita should qualify for Ladki Bahin, PMAY-G, APY, PMUY, and be Almost for Sanjay Gandhi."""
     sunita = CitizenProfile(
         name="Sunita Kamble",
         age=35,
         gender="female",
-        annual_income=135000.0,
+        annual_income=240000.0,
         caste_category="sc",
         land_holding_hectares=0.0,
         occupation="laborer",
+        state="Maharashtra",
         has_bank_account=True,
         has_aadhaar=True,
         owns_pucca_house=False
@@ -60,22 +64,26 @@ def test_persona_sunita_rural_woman():
     results = run_engine(sunita)
     results_map = {r.scheme_id: r.status for r in results}
 
-    assert results_map.get("majhi_ladki_bahin") == "eligible", f"Expected eligible, got {results_map.get('majhi_ladki_bahin')}"
-    # Income ₹1.35L exceeds PMAY-G ₹1.20L by one condition -> should be 'almost'
-    assert results_map.get("pmay_g") == "almost", f"Expected almost, got {results_map.get('pmay_g')}"
+    assert results_map.get("ladki_bahin") == "eligible", f"Expected eligible, got {results_map.get('ladki_bahin')}"
+    assert results_map.get("pm_ujjwala") == "eligible", f"Expected eligible, got {results_map.get('pm_ujjwala')}"
+    assert results_map.get("atal_pension") == "eligible", f"Expected eligible, got {results_map.get('pmay_gramin')}"
+    assert results_map.get("pm_kisan") == "ineligible"  # Laborer, not farmer
+    assert results_map.get("namo_shetkari") == "ineligible"
+    assert results_map.get("sanjay_gandhi_niradhar") == "ineligible"  # Income ₹2.4L exceeds destitute limit ₹21k
     print("[PASS] test_persona_sunita_rural_woman")
 
 
 def test_persona_vikram_urban_salaried():
-    """Vikram should be ineligible for farmer and income-capped welfare schemes."""
+    """Vikram should be ineligible for welfare schemes."""
     vikram = CitizenProfile(
         name="Vikram Joshi",
         age=30,
         gender="male",
-        annual_income=650000.0,
+        annual_income=600000.0,
         caste_category="general",
         land_holding_hectares=0.0,
         occupation="salaried",
+        state="Maharashtra",
         has_bank_account=True,
         has_aadhaar=True,
         owns_pucca_house=True
@@ -84,8 +92,9 @@ def test_persona_vikram_urban_salaried():
     results_map = {r.scheme_id: r.status for r in results}
 
     assert results_map.get("pm_kisan") == "ineligible"
-    assert results_map.get("majhi_ladki_bahin") == "ineligible"
-    assert results_map.get("pmay_g") == "ineligible"
+    assert results_map.get("ladki_bahin") == "ineligible"
+    assert results_map.get("pmay_gramin") == "ineligible"  # Owns pucca house
+    assert results_map.get("sanjay_gandhi_niradhar") == "ineligible"  # Income exceeds
     print("[PASS] test_persona_vikram_urban_salaried")
 
 
@@ -99,6 +108,7 @@ def test_almost_eligible_remedy_hints():
         caste_category="obc",
         land_holding_hectares=1.0,
         occupation="farmer",
+        state="Maharashtra",
         has_bank_account=False,  # Single failed rule
         has_aadhaar=True,
         owns_pucca_house=False

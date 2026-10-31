@@ -46,6 +46,7 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
                 hints.append(hints_data["age"])
 
     # ── Rule: annual income ceiling ────────────────────────────────
+    income_hard_disqualified = False
     if "annual_income" in rules:
         max_inc = rules["annual_income"].get("max")
         if max_inc is not None:
@@ -53,7 +54,10 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
                 matched.append(f"Income ₹{profile.annual_income:,.0f} is within ceiling ₹{max_inc:,.0f}")
             else:
                 failed.append(f"Income ₹{profile.annual_income:,.0f} exceeds ceiling of ₹{max_inc:,.0f}")
-                if "annual_income" in hints_data:
+                # If income exceeds ceiling by more than 25%, it is a hard disqualifier (not a near-miss)
+                if profile.annual_income > max_inc * 1.25:
+                    income_hard_disqualified = True
+                elif "annual_income" in hints_data:
                     hints.append(hints_data["annual_income"])
 
     # ── Rule: land holding ceiling and floor ───────────────────────
@@ -91,6 +95,16 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
             if "caste_category" in hints_data:
                 hints.append(hints_data["caste_category"])
 
+    # ── Rule: state domicile ───────────────────────────────────────
+    if "state" in rules:
+        allowed = [s.lower() for s in rules["state"]]
+        if profile.state.lower() in allowed:
+            matched.append(f"State domicile ({profile.state}) matches required: {rules['state']}")
+        else:
+            failed.append(f"State must be {rules['state']}; applicant is: {profile.state}")
+            if "state" in hints_data:
+                hints.append(hints_data["state"])
+
     # ── Rule: boolean fields ───────────────────────────────────────
     for field_name in ["has_bank_account", "has_aadhaar", "owns_pucca_house"]:
         if field_name in rules:
@@ -98,18 +112,23 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
             actual = getattr(profile, field_name)
             label = field_name.replace("_", " ").title()
             if actual == expected:
-                matched.append(f"{label}: ✓ ({actual})")
+                matched.append(f"{label}: [OK] ({actual})")
             else:
                 failed.append(f"{label} must be {expected}; applicant has: {actual}")
                 if field_name in hints_data:
                     hints.append(hints_data[field_name])
 
     # ── Determine final status ─────────────────────────────────────
-    # Note: Gender mismatch is a permanent non-negotiable statutory disqualifier
+    # Hard statutory disqualifiers that can never be "almost" eligible:
     gender_failed = any("Gender must be" in f for f in failed)
+    occupation_failed = any("Occupation must be" in f for f in failed)
+    pucca_failed = any("Owns Pucca House must be False" in f for f in failed)
+
+    is_hard_disqualified = gender_failed or occupation_failed or pucca_failed or income_hard_disqualified
+
     if len(failed) == 0:
         status = "eligible"
-    elif len(failed) == 1 and not gender_failed:
+    elif len(failed) == 1 and not is_hard_disqualified:
         status = "almost"
     else:
         status = "ineligible"
