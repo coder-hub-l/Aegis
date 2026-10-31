@@ -77,10 +77,10 @@ All 8 schemes in this repository were manually verified on **October 31, 2026** 
 | :--- | :--- | :--- | :--- |
 | **PM-KISAN Samman Nidhi** | Ministry of Agriculture & Farmers Welfare, GoI | [pmkisan.gov.in](https://pmkisan.gov.in) | `2026-10-31T02:38:00Z` |
 | **Mukhyamantri Majhi Ladki Bahin** | Women & Child Development Dept, GoM | [ladakibahin.maharashtra.gov.in](https://ladakibahin.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
-| **PMAY - Gramin (2024–29 Extension)** | Ministry of Rural Development, GoI | [pmayg.nic.in](https://pmayg.nic.in) | `2026-10-31T02:38:00Z` |
-| **Namo Shetkari Mahasanman Nidhi** | Department of Agriculture, GoM | [namoshetkari.mahadbt.maharashtra.gov.in](https://namoshetkari.mahadbt.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
+| **PMAY - Gramin (2024–29 Extension)** | Ministry of Rural Development, GoI | [pmayg.nic.in](https://pmayg.dord.gov.in) | `2026-10-31T02:38:00Z` |
+| **Namo Shetkari Mahasanman Nidhi** | Department of Agriculture, GoM | [namoshetkari.mahadbt.maharashtra.gov.in](https://nsmny.mahait.org) | `2026-10-31T02:38:00Z` |
 | **Sanjay Gandhi Niradhar Anudan** | Social Justice & Special Assistance Dept, GoM | [sjsa.maharashtra.gov.in](https://sjsa.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
-| **Atal Pension Yojana (APY)** | PFRDA / Ministry of Finance, GoI | [npscra.nsdl.co.in](https://npscra.nsdl.co.in) | `2026-10-31T02:38:00Z` |
+| **Atal Pension Yojana (APY)** | PFRDA / Ministry of Finance, GoI | [npscra.nsdl.co.in](https://enps.nps-proteantech.in/) | `2026-10-31T02:38:00Z` |
 | **PM Ujjwala Yojana 2.0** | Ministry of Petroleum & Natural Gas, GoI | [pmuy.gov.in](https://pmuy.gov.in) | `2026-10-31T02:38:00Z` |
 | **Shetkari Karjmukti Yojana (MJPSKY)** | Co-operation & Marketing Dept, GoM | [mjpsky.maharashtra.gov.in](https://mjpsky.maharashtra.gov.in) | `2026-10-31T02:38:00Z` |
 
