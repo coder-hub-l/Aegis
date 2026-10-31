@@ -13,21 +13,34 @@ html, body, [class*="css"] {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
-/* Remove default whitespace */
+/* Remove default whitespace with safe clearance for Streamlit header */
 .block-container {
-    padding-top: 0 !important;
+    padding-top: 2.75rem !important;
     padding-bottom: 3rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+@media (min-width: 768px) {
+    .block-container {
+        padding-top: 3.25rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
 }
 
 /* Top Government Header Bar */
 .gov-topbar {
     background-color: #1B3A6B;
-    padding: 0 28px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 54px;
-    margin-bottom: 8px;
+    min-height: 52px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 .gov-portal-name {
     color: #FFFFFF;
@@ -49,6 +62,15 @@ html, body, [class*="css"] {
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    white-space: nowrap;
+}
+@media (max-width: 640px) {
+    .gov-badge {
+        display: none !important;
+    }
+    .gov-portal-name {
+        font-size: 13px !important;
+    }
 }
 
 /* Field Sub-section Header Labels */

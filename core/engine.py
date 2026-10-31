@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any
 from core.models import CitizenProfile, SchemeResult
+from data.constants import SCHEME_TRANSLATIONS
 
 
 def load_schemes() -> List[Dict[str, Any]]:
@@ -133,20 +134,27 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
     else:
         status = "ineligible"
 
+    trans = SCHEME_TRANSLATIONS.get(scheme["scheme_id"], {})
+
     return SchemeResult(
         scheme_id=scheme["scheme_id"],
         name=scheme["name"],
+        name_mr=trans.get("name_mr", scheme["name"]),
         department=scheme.get("department", "Government of Maharashtra"),
+        department_mr=trans.get("dept_mr", "महाराष्ट्र शासन"),
         status=status,
         matched_rules=matched,
         failed_rules=failed,
         hints=hints,
         exclusions=scheme.get("exclusions", []),
         explanation="",       # Will be filled by explainer.py
+        explanation_mr=trans.get("eligible_reason" if status == "eligible" else "almost_advice", ""),
         almost_advice="",     # Will be filled by explainer.py
+        almost_advice_mr=trans.get("almost_advice", ""),
         source_url=scheme.get("source_url", ""),
         last_fetched=scheme.get("last_fetched", ""),
-        description=scheme.get("description", "")
+        description=scheme.get("description", ""),
+        description_mr=trans.get("desc_mr", "")
     )
 
 

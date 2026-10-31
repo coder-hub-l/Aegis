@@ -30,15 +30,14 @@ st.set_page_config(
 # ── Global CSS Injection ────────────────────────────────────────────────
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
-# ── Language Toggle + Dark Mode (Sidebar top) ───────────────────────────
-lang = st.sidebar.radio("Language / भाषा", ["English", "मराठी"], index=0)
-is_marathi = (lang == "मराठी")
-dark_mode = st.sidebar.toggle("Dark Mode", value=False)
-if dark_mode:
-    st.markdown(DARK_CSS, unsafe_allow_html=True)
-
 # ── State Initialization ────────────────────────────────────────────────
 init_form_state()
+
+# ── Sidebar: Logo Pinned Top, Language, Dark Mode, Portals, Profile ─────
+active_profile = st.session_state.get("submitted_profile")
+lang, is_marathi, dark_mode = render_sidebar(profile=active_profile)
+if dark_mode:
+    st.markdown(DARK_CSS, unsafe_allow_html=True)
 
 # ── Header & Main Form View ─────────────────────────────────────────────
 render_topbar(is_marathi)
@@ -53,11 +52,13 @@ submitted, profile = render_intake_form(is_marathi)
 
 # Step 3: Evaluation Pipeline
 if submitted and profile:
-    render_sidebar(profile=profile, lang=lang)
+    st.session_state["submitted_profile"] = profile
     with st.spinner(t("spinner", is_marathi)):
         results = run_eligibility_pipeline(profile)
+        st.session_state["latest_results"] = results
     render_results(results, lang=lang, profile=profile)
-else:
-    render_sidebar(profile=None, lang=lang)
+elif "latest_results" in st.session_state and st.session_state.get("submitted_profile"):
+    # Re-render results if user switched language or toggled dark mode without re-submitting
+    render_results(st.session_state["latest_results"], lang=lang, profile=st.session_state["submitted_profile"])
 
 st.markdown("</div>", unsafe_allow_html=True)

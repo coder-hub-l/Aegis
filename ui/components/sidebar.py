@@ -1,37 +1,42 @@
 # ui/components/sidebar.py
-"""Left sidebar: govt logo, controls, profile inspector, portals, architecture note."""
+"""Left sidebar: govt logo pinned at top, unified language, dark mode, portals, profile."""
 import streamlit as st
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 from core.models import CitizenProfile
 from data.constants import INCOME_CERTIFICATE_URL, AADHAAR_ENROLLMENT_URL, JAN_DHAN_URL
 
-# Resolve logo relative to project root
+# Resolve official Maharashtra seal logo relative to project root
 _LOGO_PATH = Path(__file__).resolve().parent.parent.parent / "logo_MH.png"
 
-# Voice language options — selected value stored in st.session_state["tts_lang"]
-TTS_LANG_OPTIONS = {
-    "English (en-IN)": "en-IN",
-    "हिंदी (hi-IN)":   "hi-IN",
-    "मराठी (mr-IN)":   "mr-IN",
-}
 
-
-def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "English"):
-    is_marathi = (lang == "मराठी")
-
+def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool, bool]:
+    """
+    Renders the unified left sidebar in strict authoritative order:
+    1. Maharashtra Government Seal
+    2. Header Title
+    3. Single Unified Language Selector (controls page text AND voice language)
+    4. Dark Mode Toggle
+    5. Official Portals
+    6. System Architecture Note
+    7. Active Applicant Profile (when available)
+    
+    Returns:
+        (lang, is_marathi, dark_mode)
+    """
     with st.sidebar:
-        # ── Government Logo (always pinned top) ─────────────────────────
+        # ── 1. Government Seal Logo (Pinned at top) ──────────────────────
         if _LOGO_PATH.exists():
-            st.image(str(_LOGO_PATH), width=80)
+            st.image(str(_LOGO_PATH), width=75)
+
+        # ── 2. Header Title ──────────────────────────────────────────────
         st.markdown(
             """
-            <div style="padding:6px 0 18px 0;
-                        border-bottom:2px solid #E5E7EB; margin-bottom:16px;">
+            <div style="padding:4px 0 14px 0; border-bottom:2px solid #E5E7EB; margin-bottom:14px;">
                 <div style="font-size:15px; font-weight:800; color:#1B3A6B; line-height:1.3;">
                     महाराष्ट्र शासन
                 </div>
-                <div style="font-size:11px; color:#6B7280; font-weight:500; margin-top:2px;">
+                <div style="font-size:11px; color:#6B7280; font-weight:600; margin-top:2px;">
                     Government of Maharashtra
                 </div>
                 <div style="font-size:11px; color:#6B7280;">
@@ -42,28 +47,28 @@ def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "Englis
             unsafe_allow_html=True,
         )
 
-        # ── Voice Language Selector ──────────────────────────────────────
-        st.markdown(
-            f"<div style='font-size:11px; font-weight:700; color:#6B7280; "
-            f"text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;'>"
-            f"{'आवाज भाषा' if is_marathi else 'Voice Language'}</div>",
-            unsafe_allow_html=True,
-        )
-        selected_label = st.selectbox(
-            "Voice Language",
-            options=list(TTS_LANG_OPTIONS.keys()),
+        # ── 3. Unified Language Selector (Page + Voice) ──────────────────
+        lang = st.radio(
+            "Language / भाषा",
+            ["English", "मराठी"],
             index=0,
-            label_visibility="collapsed",
-            key="tts_lang_label",
+            key="unified_app_lang"
         )
-        st.session_state["tts_lang"] = TTS_LANG_OPTIONS[selected_label]
+        is_marathi = (lang == "मराठी")
+
+        # ── 4. Dark Mode Toggle ──────────────────────────────────────────
+        dark_mode = st.toggle(
+            "Dark Mode" if not is_marathi else "डार्क मोड",
+            value=False,
+            key="unified_dark_mode"
+        )
 
         st.markdown(
             "<hr style='border:none; border-top:1px solid #E5E7EB; margin:14px 0;'>",
             unsafe_allow_html=True,
         )
 
-        # ── Active Applicant Profile ─────────────────────────────────────
+        # ── 5. Active Applicant Profile (Rendered when submitted) ────────
         if profile:
             st.markdown(
                 f"<div style='font-size:11px; font-weight:700; color:#6B7280; "
@@ -74,7 +79,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "Englis
             )
             rows = [
                 ("Name"       if not is_marathi else "नाव",             profile.name),
-                ("Age"        if not is_marathi else "वय",              f"{profile.age} years"),
+                ("Age"        if not is_marathi else "वय",              f"{profile.age} years" if not is_marathi else f"{profile.age} वर्षे"),
                 ("Gender"     if not is_marathi else "लिंग",            profile.gender.capitalize()),
                 ("Income"     if not is_marathi else "वार्षिक उत्पन्न", f"Rs. {profile.annual_income:,.0f}"),
                 ("Caste"      if not is_marathi else "जात",             profile.caste_category.upper()),
@@ -99,7 +104,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "Englis
                 unsafe_allow_html=True,
             )
 
-        # ── Official Portals ─────────────────────────────────────────────
+        # ── 6. Official Portals ──────────────────────────────────────────
         st.markdown(
             f"<div style='font-size:11px; font-weight:700; color:#6B7280; "
             f"text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px;'>"
@@ -128,7 +133,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "Englis
             unsafe_allow_html=True,
         )
 
-        # ── Technical Architecture Note ──────────────────────────────────
+        # ── 7. Technical Architecture Note ───────────────────────────────
         with st.expander("System Architecture" if not is_marathi else "प्रणाली रचना"):
             st.markdown(
                 """
@@ -145,3 +150,5 @@ def render_sidebar(profile: Optional[CitizenProfile] = None, lang: str = "Englis
                 """,
                 unsafe_allow_html=True,
             )
+
+    return lang, is_marathi, dark_mode

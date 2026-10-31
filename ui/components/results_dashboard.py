@@ -109,18 +109,24 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
             if not matches_search(r):
                 continue
             colour = {"eligible": "#15803D", "almost": "#B45309", "ineligible": "#991B1B"}[r.status]
+            d_name = r.name_mr if (is_marathi and r.name_mr) else r.name
+            d_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
+            d_desc = r.description_mr if (is_marathi and r.description_mr) else r.description
+            status_lbl = {"eligible": "पात्र" if is_marathi else "ELIGIBLE",
+                          "almost": "जवळपास पात्र" if is_marathi else "ALMOST",
+                          "ineligible": "अपात्र" if is_marathi else "INELIGIBLE"}[r.status]
             st.markdown(
                 f"<div style='border:1px solid #E5E7EB; border-radius:6px; padding:12px 16px; "
                 f"margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;'>"
                 f"<div>"
-                f"<div style='font-size:14px; font-weight:700; color:#1B3A6B;'>{r.name}</div>"
-                f"<div style='font-size:12px; color:#6B7280;'>{r.department}</div>"
-                f"<div style='font-size:12px; color:#374151; margin-top:4px;'>{r.description}</div>"
+                f"<div style='font-size:14px; font-weight:700; color:#1B3A6B;'>{d_name}</div>"
+                f"<div style='font-size:12px; color:#6B7280;'>{d_dept}</div>"
+                f"<div style='font-size:12px; color:#374151; margin-top:4px;'>{d_desc}</div>"
                 f"</div>"
                 f"<div style='text-align:right; min-width:100px;'>"
                 f"<span style='background:{colour}22; color:{colour}; border:1px solid {colour}44; "
                 f"padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; "
-                f"text-transform:uppercase;'>{r.status}</span>"
+                f"text-transform:uppercase;'>{status_lbl}</span>"
                 f"</div></div>",
                 unsafe_allow_html=True
             )

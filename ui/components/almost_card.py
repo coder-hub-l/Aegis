@@ -7,22 +7,27 @@ from ui.components.tts_button import render_tts_button
 
 def render_almost_card(r: SchemeResult, is_marathi: bool):
     """Render yellow action-required card for an almost eligible scheme."""
-    tts_lang = st.session_state.get("tts_lang", "mr-IN" if is_marathi else "en-IN")
-    tts_label = "सुनावणी / Listen" if is_marathi else "Listen to Advice"
+    tts_lang = "mr-IN" if is_marathi else "en-IN"
+    tts_label = "सूचना ऐका" if is_marathi else "Listen to Advice"
     missing = r.failed_rules[0] if r.failed_rules else "N/A"
 
+    disp_name = r.name_mr if (is_marathi and r.name_mr) else r.name
+    disp_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
+    disp_desc = r.description_mr if (is_marathi and r.description_mr) else r.description
+    disp_advice = r.almost_advice_mr if (is_marathi and r.almost_advice_mr) else (r.almost_advice or "Please fulfill the pending requirement.")
+
     with st.container(border=True):
-        c_left, c_right = st.columns([4, 1])
+        c_left, c_right = st.columns([3.8, 1.2])
 
         with c_left:
             st.markdown(
                 f"<div style='font-size:16px; font-weight:700; color:#1B3A6B; margin-bottom:2px;'>"
-                f"{r.name}</div>",
+                f"{disp_name}</div>",
                 unsafe_allow_html=True
             )
             st.markdown(
                 f"<div style='font-size:12px; color:#6B7280; margin-bottom:10px;'>"
-                f"{r.department}</div>",
+                f"{disp_dept}</div>",
                 unsafe_allow_html=True
             )
             st.markdown(
@@ -38,8 +43,8 @@ def render_almost_card(r: SchemeResult, is_marathi: bool):
                 f"</div>",
                 unsafe_allow_html=True
             )
-            st.write(r.almost_advice)
-            render_tts_button(f"{r.name}. Unmet: {missing}. {r.almost_advice}", tts_lang, tts_label)
+            st.write(disp_advice)
+            render_tts_button(f"{disp_name}. {disp_advice}", tts_lang, tts_label)
 
             if r.hints:
                 with st.expander("शासकीय मार्गदर्शन" if is_marathi else "Official Department Guidance"):
@@ -69,23 +74,23 @@ def render_almost_card(r: SchemeResult, is_marathi: bool):
             st.markdown(
                 f"""
                 <div style="background:#FFFBEB; border:1.5px solid #D97706; border-radius:8px;
-                            padding:14px; text-align:center; height:100%;">
+                            padding:14px; text-align:center; min-height:90px; margin-top:4px;">
                     <div style="font-size:11px; font-weight:700; color:#B45309;
-                                letter-spacing:0.8px; text-transform:uppercase; margin-bottom:8px;">
+                                letter-spacing:0.8px; text-transform:uppercase; margin-bottom:6px;">
                         STATUS
                     </div>
-                    <div style="font-size:18px; font-weight:800; color:#B45309; margin-bottom:6px;">
-                        ALMOST
+                    <div style="font-size:18px; font-weight:800; color:#B45309; margin-bottom:4px;">
+                        {'जवळपास पात्र' if is_marathi else 'ALMOST'}
                     </div>
-                    <div style="font-size:11px; color:#92400E; margin-bottom:14px; font-weight:500;">
-                        1 condition unmet
+                    <div style="font-size:11px; color:#92400E; margin-bottom:12px; font-weight:500;">
+                        {'१ अट अपूर्ण' if is_marathi else '1 condition unmet'}
                     </div>
                     <a href="{r.source_url}" target="_blank"
                        style="font-size:12px; color:#2563EB; font-weight:600; text-decoration:none;">
-                        Official Portal &#8599;
+                        {'अधिकृत पोर्टल' if is_marathi else 'Official Portal'} &#8599;
                     </a><br>
                     <div style="font-size:11px; color:#9CA3AF; margin-top:8px;">
-                        Data verified<br>{r.last_fetched[:10] if r.last_fetched else '2026-10-31'}
+                        {'पडताळणी दिनांक' if is_marathi else 'Data verified'}<br>{r.last_fetched[:10] if r.last_fetched else '2026-10-31'}
                     </div>
                 </div>
                 """,

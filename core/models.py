@@ -28,14 +28,19 @@ class SchemeResult(BaseModel):
     """
     scheme_id: str
     name: str
+    name_mr: Optional[str] = ""
     department: str
+    department_mr: Optional[str] = ""
     status: str  # MUST BE: "eligible" | "almost" | "ineligible"
     matched_rules: List[str] = []   # Human-readable list of passing conditions
     failed_rules: List[str] = []    # Human-readable list of failing conditions
     hints: List[str] = []           # "Almost" guidance from schemes.json hints
     exclusions: List[str] = []      # Statutory exclusions from schemes.json (Babu Shield)
-    explanation: str = ""           # AI-generated verdict explanation (filled by explainer.py)
-    almost_advice: str = ""         # AI-generated remediation steps (only for "almost")
+    explanation: str = ""           # English explanation
+    explanation_mr: str = ""        # Marathi explanation
+    almost_advice: str = ""         # English remediation steps (for "almost")
+    almost_advice_mr: str = ""      # Marathi remediation steps (for "almost")
     source_url: str = ""            # Official government URL
     last_fetched: str = ""          # ISO timestamp - proves no mock data
-    description: str = ""           # Scheme benefit description
+    description: str = ""           # English scheme benefit description
+    description_mr: Optional[str] = "" # Marathi scheme benefit description

@@ -6,14 +6,17 @@ from core.models import SchemeResult
 
 def render_ineligible_card(r: SchemeResult, is_marathi: bool):
     """Render compact card for an ineligible scheme."""
+    disp_name = r.name_mr if (is_marathi and r.name_mr) else r.name
+    disp_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
+
     with st.container(border=True):
-        c_left, c_right = st.columns([4, 1])
+        c_left, c_right = st.columns([3.8, 1.2])
 
         with c_left:
             st.markdown(
                 f"<div style='font-size:14px; font-weight:700; color:#374151; margin-bottom:4px;'>"
-                f"{r.name}</div>"
-                f"<div style='font-size:12px; color:#9CA3AF; margin-bottom:8px;'>{r.department}</div>",
+                f"{disp_name}</div>"
+                f"<div style='font-size:12px; color:#9CA3AF; margin-bottom:8px;'>{disp_dept}</div>",
                 unsafe_allow_html=True
             )
             if r.explanation:
@@ -34,9 +37,9 @@ def render_ineligible_card(r: SchemeResult, is_marathi: bool):
             st.markdown(
                 f"""
                 <div style="background:#FEF2F2; border:1px solid #EF4444; border-radius:6px;
-                            padding:8px 10px; text-align:center;">
+                            padding:8px 10px; text-align:center; min-height:40px; margin-top:4px;">
                     <div style="font-size:10px; font-weight:700; color:#991B1B; text-transform:uppercase;">
-                        INELIGIBLE
+                        {'अपात्र' if is_marathi else 'INELIGIBLE'}
                     </div>
                 </div>
                 """,

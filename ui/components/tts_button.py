@@ -1,5 +1,5 @@
 # ui/components/tts_button.py
-"""Interactive Web Speech audio narrator with play/pause/stop, voice selection, and transcript."""
+"""Interactive Web Speech audio narrator with play/pause/stop and live synchronized transcript."""
 import html
 import streamlit.components.v1 as components
 
@@ -8,14 +8,18 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
     """
     Renders an accessible speech player with:
     - Play / Pause / Stop controls
-    - Multilingual voice selector (Marathi, Hindi, English)
+    - Automatically synced to page language (e.g. mr-IN for Marathi, en-IN for English)
     - Live synchronized transcript display with word highlighting
     """
     safe_text_json = text.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("\n", " ")
     escaped_display = html.escape(text)
 
-    # Determine default dropdown option
-    default_lang = lang_code if lang_code in ["mr-IN", "hi-IN", "en-IN", "en-US"] else "en-IN"
+    is_mr = "mr" in lang_code.lower()
+    lbl_play = "सुरू करा" if is_mr else "Play"
+    lbl_pause = "थांबवा" if is_mr else "Pause"
+    lbl_stop = "बंद करा" if is_mr else "Stop"
+    lbl_transcript = "वाचलेला मजकूर" if is_mr else "Spoken Transcript"
+    lbl_ready = "तयार" if is_mr else "Ready"
 
     html_code = f"""
     <!DOCTYPE html>
@@ -33,15 +37,14 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
         background: #F8FAFC;
         border: 1px solid #CBD5E1;
         border-radius: 6px;
-        padding: 10px 12px;
+        padding: 8px 10px;
         box-sizing: border-box;
       }}
       .controls-bar {{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 6px;
       }}
       .btn-group {{
         display: flex;
@@ -51,11 +54,10 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
       button.audio-btn {{
         font-size: 11px;
         font-weight: 700;
-        padding: 5px 12px;
+        padding: 4px 10px;
         border-radius: 4px;
         border: none;
         cursor: pointer;
-        text-transform: uppercase;
         letter-spacing: 0.3px;
         transition: background 0.15s ease;
       }}
@@ -80,53 +82,33 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
       #btnStop:hover {{
         background: #64748B;
       }}
-      .lang-group {{
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }}
-      .lang-label {{
-        font-size: 11px;
-        color: #64748B;
-        font-weight: 600;
-      }}
-      select.lang-select {{
-        font-size: 11px;
-        padding: 4px 6px;
-        border: 1px solid #CBD5E1;
-        border-radius: 4px;
-        background: #FFFFFF;
-        color: #1E293B;
-        outline: none;
-      }}
       .status-pill {{
         font-size: 11px;
         font-weight: 600;
         color: #64748B;
-        min-width: 65px;
         text-align: right;
       }}
       .transcript-box {{
-        margin-top: 8px;
-        padding: 8px 10px;
+        margin-top: 6px;
+        padding: 6px 8px;
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 4px;
-        max-height: 72px;
+        max-height: 56px;
         overflow-y: auto;
       }}
       .transcript-title {{
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         color: #94A3B8;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
       }}
       .transcript-content {{
-        font-size: 12px;
+        font-size: 11px;
         color: #334155;
-        line-height: 1.45;
+        line-height: 1.4;
       }}
       .highlight-word {{
         background-color: #DBEAFE;
@@ -141,29 +123,21 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
     <div class="player-container">
       <div class="controls-bar">
         <div class="btn-group">
-          <button id="btnPlay" class="audio-btn" onclick="startPlay()">Play</button>
-          <button id="btnPause" class="audio-btn" onclick="pausePlay()">Pause</button>
-          <button id="btnStop" class="audio-btn" onclick="stopPlay()">Stop</button>
+          <button id="btnPlay" class="audio-btn" onclick="startPlay()">{lbl_play}</button>
+          <button id="btnPause" class="audio-btn" onclick="pausePlay()">{lbl_pause}</button>
+          <button id="btnStop" class="audio-btn" onclick="stopPlay()">{lbl_stop}</button>
         </div>
-        <div class="lang-group">
-          <span class="lang-label">Voice:</span>
-          <select id="voiceSelect" class="lang-select" onchange="onLangChange(this.value)">
-            <option value="mr-IN" {"selected" if "mr" in default_lang else ""}>मराठी (mr-IN)</option>
-            <option value="hi-IN" {"selected" if "hi" in default_lang else ""}>हिंदी (hi-IN)</option>
-            <option value="en-IN" {"selected" if "en" in default_lang else ""}>English (en-IN)</option>
-          </select>
-        </div>
-        <div id="statusPill" class="status-pill">Ready</div>
+        <div id="statusPill" class="status-pill">{lbl_ready}</div>
       </div>
       <div class="transcript-box">
-        <div class="transcript-title">Spoken Transcript</div>
+        <div class="transcript-title">{lbl_transcript}</div>
         <div id="transcriptDisplay" class="transcript-content">{escaped_display}</div>
       </div>
     </div>
 
     <script>
       var rawText = "{safe_text_json}";
-      var chosenLang = "{default_lang}";
+      var chosenLang = "{lang_code}";
       var currentUtterance = null;
       var isPausedState = false;
 
@@ -191,14 +165,6 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
         }}
       }}
 
-      function onLangChange(val) {{
-        chosenLang = val;
-        if (window.speechSynthesis && window.speechSynthesis.speaking) {{
-          stopPlay();
-          startPlay();
-        }}
-      }}
-
       function startPlay() {{
         if (!("speechSynthesis" in window)) {{
           setStatus("Unsupported", "#991B1B");
@@ -208,7 +174,7 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
         if (window.speechSynthesis.paused && isPausedState) {{
           window.speechSynthesis.resume();
           isPausedState = false;
-          setStatus("Playing", "#15803D");
+          setStatus("{"सुरू आहे..." if is_mr else "Playing"}", "#15803D");
           return;
         }}
 
@@ -219,28 +185,28 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
 
         currentUtterance.onstart = function() {{
           isPausedState = false;
-          setStatus("Playing", "#15803D");
+          setStatus("{"बोलत आहे..." if is_mr else "Speaking..."}", "#15803D");
         }};
 
         currentUtterance.onpause = function() {{
           isPausedState = true;
-          setStatus("Paused", "#B45309");
+          setStatus("{"थांबवले" if is_mr else "Paused"}", "#B45309");
         }};
 
         currentUtterance.onresume = function() {{
           isPausedState = false;
-          setStatus("Playing", "#15803D");
+          setStatus("{"सुरू आहे..." if is_mr else "Playing"}", "#15803D");
         }};
 
         currentUtterance.onend = function() {{
           isPausedState = false;
-          setStatus("Completed", "#64748B");
+          setStatus("{"पूर्ण झाले" if is_mr else "Completed"}", "#64748B");
           resetTranscript();
         }};
 
         currentUtterance.onerror = function() {{
           isPausedState = false;
-          setStatus("Ready", "#64748B");
+          setStatus("{lbl_ready}", "#64748B");
           resetTranscript();
         }};
 
@@ -267,7 +233,7 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
         if (window.speechSynthesis && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {{
           window.speechSynthesis.pause();
           isPausedState = true;
-          setStatus("Paused", "#B45309");
+          setStatus("{"थांबवले" if is_mr else "Paused"}", "#B45309");
         }}
       }}
 
@@ -275,7 +241,7 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
         if (window.speechSynthesis) {{
           window.speechSynthesis.cancel();
           isPausedState = false;
-          setStatus("Ready", "#64748B");
+          setStatus("{lbl_ready}", "#64748B");
           resetTranscript();
         }}
       }}
@@ -283,4 +249,4 @@ def render_tts_button(text: str, lang_code: str = "en-IN", btn_label: str = "Aud
     </body>
     </html>
     """
-    components.html(html_code, height=135)
+    components.html(html_code, height=115)
