@@ -55,7 +55,7 @@
     "scheme_id": "pmay_gramin",
     "name": "Pradhan Mantri Awas Yojana - Gramin (PMAY-G)",
     "department": "Ministry of Rural Development / Rural Development Dept Maharashtra",
-    "source_url": "https://pmayg.nic.in",
+    "source_url": "https://pmayg.dord.gov.in/",
     "last_fetched": "2026-10-31T02:27:00Z",
     "description": "Financial grant of ₹1.20 Lakhs (plain) to ₹1.30 Lakhs (hilly) for constructing a pucca house, plus ₹12,000 for toilet (SBM-G) and 90–95 days MGNREGA wages. Extended to March 2029 with 2 crore new houses target.",
     "rules": {
@@ -80,7 +80,7 @@
     "scheme_id": "namo_shetkari",
     "name": "Namo Shetkari Mahasanman Nidhi Yojana",
     "department": "Department of Agriculture, Govt of Maharashtra",
-    "source_url": "https://namoshetkari.mahadbt.maharashtra.gov.in",
+    "source_url": "https://nsmny.mahait.org/",
     "last_fetched": "2026-10-31T02:31:00Z",
     "description": "Maharashtra State top-up of ₹6,000 per year for farmers already registered under PM-KISAN, bringing total benefit to ₹12,000/year combined.",
     "rules": {
@@ -126,7 +126,7 @@
     "scheme_id": "atal_pension",
     "name": "Atal Pension Yojana (APY)",
     "department": "Pension Fund Regulatory and Development Authority (PFRDA), MoF",
-    "source_url": "https://npscra.nsdl.co.in",
+    "source_url": "https://enps.nps-proteantech.in/",
     "last_fetched": "2026-10-31T02:41:00Z",
     "description": "Guaranteed monthly pension of ₹1,000 / ₹2,000 / ₹3,000 / ₹4,000 / ₹5,000 from age 60 based on contribution tier, with spouse pension and nominee corpus return for unorganised sector workers.",
     "rules": {
