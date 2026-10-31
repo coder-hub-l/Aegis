@@ -3,6 +3,7 @@
 import streamlit as st
 from core.models import SchemeResult
 from ui.components.tts_button import render_tts_button
+from data.constants import SCHEME_TRANSLATIONS
 
 
 def render_almost_card(r: SchemeResult, is_marathi: bool):
@@ -11,10 +12,11 @@ def render_almost_card(r: SchemeResult, is_marathi: bool):
     tts_label = "सूचना ऐका" if is_marathi else "Listen to Advice"
     missing = r.failed_rules[0] if r.failed_rules else "N/A"
 
-    disp_name = r.name_mr if (is_marathi and r.name_mr) else r.name
-    disp_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
-    disp_desc = r.description_mr if (is_marathi and r.description_mr) else r.description
-    disp_advice = r.almost_advice_mr if (is_marathi and r.almost_advice_mr) else (r.almost_advice or "Please fulfill the pending requirement.")
+    trans = SCHEME_TRANSLATIONS.get(r.scheme_id, {})
+    disp_name = (getattr(r, "name_mr", None) or trans.get("name_mr") or r.name) if is_marathi else r.name
+    disp_dept = (getattr(r, "department_mr", None) or trans.get("dept_mr") or r.department) if is_marathi else r.department
+    disp_desc = (getattr(r, "description_mr", None) or trans.get("desc_mr") or r.description) if is_marathi else r.description
+    disp_advice = (getattr(r, "almost_advice_mr", None) or trans.get("almost_advice") or r.almost_advice) if is_marathi else (r.almost_advice or "Please fulfill the pending requirement.")
 
     with st.container(border=True):
         c_left, c_right = st.columns([3.8, 1.2])

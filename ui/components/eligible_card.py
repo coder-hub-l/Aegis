@@ -3,6 +3,7 @@
 import streamlit as st
 from core.models import SchemeResult
 from ui.components.tts_button import render_tts_button
+from data.constants import SCHEME_TRANSLATIONS
 
 
 def render_eligible_card(r: SchemeResult, is_marathi: bool):
@@ -10,10 +11,11 @@ def render_eligible_card(r: SchemeResult, is_marathi: bool):
     tts_lang = "mr-IN" if is_marathi else "en-IN"
     tts_label = "सुनावणी" if is_marathi else "Listen"
 
-    disp_name = r.name_mr if (is_marathi and r.name_mr) else r.name
-    disp_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
-    disp_desc = r.description_mr if (is_marathi and r.description_mr) else r.description
-    disp_expl = r.explanation_mr if (is_marathi and r.explanation_mr) else (r.explanation or f"You meet all statutory requirements for {r.name}.")
+    trans = SCHEME_TRANSLATIONS.get(r.scheme_id, {})
+    disp_name = (getattr(r, "name_mr", None) or trans.get("name_mr") or r.name) if is_marathi else r.name
+    disp_dept = (getattr(r, "department_mr", None) or trans.get("dept_mr") or r.department) if is_marathi else r.department
+    disp_desc = (getattr(r, "description_mr", None) or trans.get("desc_mr") or r.description) if is_marathi else r.description
+    disp_expl = (getattr(r, "explanation_mr", None) or trans.get("eligible_reason") or r.explanation) if is_marathi else (r.explanation or f"You meet all statutory requirements for {r.name}.")
 
     with st.container(border=True):
         c_left, c_right = st.columns([3.8, 1.2])

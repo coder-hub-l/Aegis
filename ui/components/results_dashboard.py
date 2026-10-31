@@ -8,6 +8,7 @@ from ui.components.almost_card import render_almost_card
 from ui.components.ineligible_card import render_ineligible_card
 from ui.components.report_builder import build_text_report
 from ui.components.whatsapp_sender import render_whatsapp_button
+from data.constants import SCHEME_TRANSLATIONS
 
 
 def render_results(results: List[SchemeResult], lang: str = "English", profile: Optional[CitizenProfile] = None):
@@ -109,9 +110,10 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
             if not matches_search(r):
                 continue
             colour = {"eligible": "#15803D", "almost": "#B45309", "ineligible": "#991B1B"}[r.status]
-            d_name = r.name_mr if (is_marathi and r.name_mr) else r.name
-            d_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
-            d_desc = r.description_mr if (is_marathi and r.description_mr) else r.description
+            trans = SCHEME_TRANSLATIONS.get(r.scheme_id, {})
+            d_name = (getattr(r, "name_mr", None) or trans.get("name_mr") or r.name) if is_marathi else r.name
+            d_dept = (getattr(r, "department_mr", None) or trans.get("dept_mr") or r.department) if is_marathi else r.department
+            d_desc = (getattr(r, "description_mr", None) or trans.get("desc_mr") or r.description) if is_marathi else r.description
             status_lbl = {"eligible": "पात्र" if is_marathi else "ELIGIBLE",
                           "almost": "जवळपास पात्र" if is_marathi else "ALMOST",
                           "ineligible": "अपात्र" if is_marathi else "INELIGIBLE"}[r.status]

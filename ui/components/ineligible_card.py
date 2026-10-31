@@ -2,12 +2,14 @@
 """Renders a single compact red card for ineligible schemes with transparent failure reasons."""
 import streamlit as st
 from core.models import SchemeResult
+from data.constants import SCHEME_TRANSLATIONS
 
 
 def render_ineligible_card(r: SchemeResult, is_marathi: bool):
     """Render compact card for an ineligible scheme."""
-    disp_name = r.name_mr if (is_marathi and r.name_mr) else r.name
-    disp_dept = r.department_mr if (is_marathi and r.department_mr) else r.department
+    trans = SCHEME_TRANSLATIONS.get(r.scheme_id, {})
+    disp_name = (getattr(r, "name_mr", None) or trans.get("name_mr") or r.name) if is_marathi else r.name
+    disp_dept = (getattr(r, "department_mr", None) or trans.get("dept_mr") or r.department) if is_marathi else r.department
 
     with st.container(border=True):
         c_left, c_right = st.columns([3.8, 1.2])
