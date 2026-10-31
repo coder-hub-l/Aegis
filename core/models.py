@@ -33,6 +33,7 @@ class SchemeResult(BaseModel):
     matched_rules: List[str] = []   # Human-readable list of passing conditions
     failed_rules: List[str] = []    # Human-readable list of failing conditions
     hints: List[str] = []           # "Almost" guidance from schemes.json hints
+    exclusions: List[str] = []      # Statutory exclusions from schemes.json (Babu Shield)
     explanation: str = ""           # AI-generated verdict explanation (filled by explainer.py)
     almost_advice: str = ""         # AI-generated remediation steps (only for "almost")
     source_url: str = ""            # Official government URL

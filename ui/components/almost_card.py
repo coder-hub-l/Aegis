@@ -7,7 +7,7 @@ from ui.components.tts_button import render_tts_button
 
 def render_almost_card(r: SchemeResult, is_marathi: bool):
     """Render yellow action-required card for an almost eligible scheme."""
-    tts_lang = "mr-IN" if is_marathi else "en-US"
+    tts_lang = st.session_state.get("tts_lang", "mr-IN" if is_marathi else "en-IN")
     tts_label = "सुनावणी / Listen" if is_marathi else "Listen to Advice"
     missing = r.failed_rules[0] if r.failed_rules else "N/A"
 
@@ -47,6 +47,21 @@ def render_almost_card(r: SchemeResult, is_marathi: bool):
                         st.markdown(
                             f"<div style='font-size:13px; color:#374151; padding:4px 0;'>"
                             f"&#x2022; &nbsp;{hint}</div>",
+                            unsafe_allow_html=True
+                        )
+
+            if r.exclusions:
+                with st.expander("बाबू शील्ड — शासकीय अपवाद संरक्षण" if is_marathi else "Babu Shield — Statutory Immunity Checklist"):
+                    st.markdown(
+                        f"<div style='font-size:12px; color:#4B5563; margin-bottom:6px;'>"
+                        f"{'शासकीय नियमांनुसार अधिकारी खालील अपवाद नसताना तुमचा अर्ज नाकारू शकत नाहीत:' if is_marathi else 'Verifying officers cannot reject your application unless you fall under one of these official exclusions:'}"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+                    for exc in r.exclusions:
+                        st.markdown(
+                            f"<div style='font-size:12px; color:#374151; padding:2px 0;'>"
+                            f"&bull; &nbsp;{exc}</div>",
                             unsafe_allow_html=True
                         )
 

@@ -7,6 +7,7 @@ from ui.components.eligible_card import render_eligible_card
 from ui.components.almost_card import render_almost_card
 from ui.components.ineligible_card import render_ineligible_card
 from ui.components.report_builder import build_text_report
+from ui.components.whatsapp_sender import render_whatsapp_button
 
 
 def render_results(results: List[SchemeResult], lang: str = "English", profile: Optional[CitizenProfile] = None):
@@ -30,9 +31,9 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
     with m4:
         st.metric("Ineligible" if not is_marathi else "अपात्र योजना", len(ineligible))
 
-    # ── Search & Report Download ──────────────────────────────────────────
+    # ── Search & Report Actions ───────────────────────────────────────────
     st.markdown("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
-    da, db = st.columns([2.5, 1.2])
+    da, db, dc = st.columns([2.2, 1.2, 1.2])
     with da:
         search_q = st.text_input(
             "Filter by scheme name or department keyword",
@@ -43,12 +44,15 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
         st.markdown("<div style='margin-top:28px;'></div>", unsafe_allow_html=True)
         report_txt = build_text_report(results, profile)
         st.download_button(
-            label="Download Eligibility Report" if not is_marathi else "अहवाल डाउनलोड करा",
+            label="Download Report" if not is_marathi else "अहवाल डाउनलोड करा",
             data=report_txt,
             file_name="maharashtra_eligibility_report.txt",
             mime="text/plain",
             use_container_width=True
         )
+    with dc:
+        st.markdown("<div style='margin-top:28px;'></div>", unsafe_allow_html=True)
+        render_whatsapp_button(results, profile, is_marathi)
 
     def matches_search(r):
         return not search_q or search_q in r.name.lower() or search_q in r.department.lower()

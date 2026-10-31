@@ -7,7 +7,7 @@ from ui.components.tts_button import render_tts_button
 
 def render_eligible_card(r: SchemeResult, is_marathi: bool):
     """Render green result card for an eligible scheme."""
-    tts_lang = "mr-IN" if is_marathi else "en-US"
+    tts_lang = st.session_state.get("tts_lang", "mr-IN" if is_marathi else "en-IN")
     tts_label = "सुनावणी / Listen" if is_marathi else "Listen to Verdict"
 
     with st.container(border=True):
@@ -46,6 +46,21 @@ def render_eligible_card(r: SchemeResult, is_marathi: bool):
                         f"&#10003; &nbsp;{rule}</div>",
                         unsafe_allow_html=True
                     )
+
+            if r.exclusions:
+                with st.expander("बाबू शील्ड — शासकीय अपवाद संरक्षण" if is_marathi else "Babu Shield — Statutory Immunity Checklist"):
+                    st.markdown(
+                        f"<div style='font-size:12px; color:#4B5563; margin-bottom:6px;'>"
+                        f"{'शासकीय नियमांनुसार अधिकारी खालील अपवाद नसताना तुमचा अर्ज नाकारू शकत नाहीत:' if is_marathi else 'Verifying officers cannot reject your application unless you fall under one of these official exclusions:'}"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+                    for exc in r.exclusions:
+                        st.markdown(
+                            f"<div style='font-size:12px; color:#374151; padding:2px 0;'>"
+                            f"&bull; &nbsp;{exc}</div>",
+                            unsafe_allow_html=True
+                        )
 
         with c_right:
             st.markdown(

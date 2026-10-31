@@ -141,6 +141,7 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
         matched_rules=matched,
         failed_rules=failed,
         hints=hints,
+        exclusions=scheme.get("exclusions", []),
         explanation="",       # Will be filled by explainer.py
         almost_advice="",     # Will be filled by explainer.py
         source_url=scheme.get("source_url", ""),

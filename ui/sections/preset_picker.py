@@ -5,8 +5,29 @@ from ui.config.strings import t
 from ui.config.presets import PRESETS, DEFAULT_FORM_DATA
 
 
+def _inject_active_shadow(active_preset: str) -> None:
+    """Inject a blue+grey box-shadow on whichever preset column is active."""
+    col_index = {"ramesh": 1, "sunita": 2, "vikram": 3}.get(active_preset, 0)
+    if not col_index:
+        return
+    st.markdown(
+        f"""<style>
+        [data-testid="stHorizontalBlock"]:first-of-type
+        [data-testid="column"]:nth-child({col_index})
+        .stButton > button {{
+            box-shadow: 0 0 0 3px #1B3A6B,
+                        0 4px 14px rgba(100, 116, 139, 0.40) !important;
+        }}
+        </style>""",
+        unsafe_allow_html=True,
+    )
+
+
 def render_preset_picker(is_marathi: bool):
     """Render the preset buttons banner and click handlers."""
+    active = st.session_state.get("active_preset")
+    _inject_active_shadow(active)
+
     st.markdown(
         f"""
         <div style="background-color:#FFFFFF; border:1px solid #D1D5DB; border-radius:8px;
@@ -22,7 +43,7 @@ def render_preset_picker(is_marathi: bool):
             <p style="font-size:13px;color:#374151;margin:0;">{t('demo_caption', is_marathi)}</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     pc1, pc2, pc3, pc4 = st.columns([2, 2, 2, 1])
@@ -34,6 +55,7 @@ def render_preset_picker(is_marathi: bool):
         exp = p["expected_mr"] if is_marathi else p["expected_en"]
         if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
             st.session_state["form_data"] = p["data"].copy()
+            st.session_state["active_preset"] = "ramesh"
             st.rerun()
         st.caption(f"{note}")
         st.caption(f"Expected — {exp}")
@@ -45,6 +67,7 @@ def render_preset_picker(is_marathi: bool):
         exp = p["expected_mr"] if is_marathi else p["expected_en"]
         if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
             st.session_state["form_data"] = p["data"].copy()
+            st.session_state["active_preset"] = "sunita"
             st.rerun()
         st.caption(f"{note}")
         st.caption(f"Expected — {exp}")
@@ -56,6 +79,7 @@ def render_preset_picker(is_marathi: bool):
         exp = p["expected_mr"] if is_marathi else p["expected_en"]
         if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
             st.session_state["form_data"] = p["data"].copy()
+            st.session_state["active_preset"] = "vikram"
             st.rerun()
         st.caption(f"{note}")
         st.caption(f"Expected — {exp}")
@@ -69,4 +93,5 @@ def render_preset_picker(is_marathi: bool):
                 occupation="farmer", has_bank_account=True, has_aadhaar=True,
                 owns_pucca_house=False
             )
+            st.session_state["active_preset"] = None
             st.rerun()

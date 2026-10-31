@@ -10,7 +10,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from core.app_logic import run_eligibility_pipeline
-from ui.config.styles import GLOBAL_CSS
+from ui.config.styles import GLOBAL_CSS, DARK_CSS
 from ui.config.strings import t
 from ui.config.presets import init_form_state
 from ui.sections.topbar import render_topbar
@@ -30,9 +30,12 @@ st.set_page_config(
 # ── Global CSS Injection ────────────────────────────────────────────────
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
-# ── Language Toggle (Sidebar top) ───────────────────────────────────────
+# ── Language Toggle + Dark Mode (Sidebar top) ───────────────────────────
 lang = st.sidebar.radio("Language / भाषा", ["English", "मराठी"], index=0)
 is_marathi = (lang == "मराठी")
+dark_mode = st.sidebar.toggle("Dark Mode", value=False)
+if dark_mode:
+    st.markdown(DARK_CSS, unsafe_allow_html=True)
 
 # ── State Initialization ────────────────────────────────────────────────
 init_form_state()

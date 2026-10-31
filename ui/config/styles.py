@@ -1,5 +1,10 @@
 # ui/config/styles.py
-"""Global CSS layout and component styling for the Aegis Streamlit application."""
+"""Global CSS layout and component styling for the Aegis Streamlit application.
+
+Exports:
+    GLOBAL_CSS  – always injected (light mode base)
+    DARK_CSS    – injected only when dark mode toggle is on
+"""
 
 GLOBAL_CSS = """
 <style>
@@ -102,6 +107,89 @@ div[data-testid="metric-container"] [data-testid="stMetricValue"] {
 /* Sidebar divider styling */
 [data-testid="stSidebar"] {
     border-right: 1px solid #D1D5DB;
+}
+</style>
+"""
+
+DARK_CSS = """
+<style>
+/* ── Dark Mode Overrides ─────────────────────────────────────────────── */
+
+/* App & page background */
+.stApp, html, body, [class*="css"],
+.block-container, [data-testid="stAppViewContainer"] {
+    background-color: #0F172A !important;
+    color: #F1F5F9 !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #1E293B !important;
+    border-right: 1px solid #334155 !important;
+}
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stMarkdown p {
+    color: #CBD5E1 !important;
+}
+
+/* Metric cards */
+div[data-testid="metric-container"] {
+    background-color: #1E293B !important;
+    border: 1px solid #334155 !important;
+}
+div[data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: #93C5FD !important;
+}
+div[data-testid="metric-container"] [data-testid="stMetricLabel"] {
+    color: #94A3B8 !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: #0F172A !important;
+    border-bottom: 2px solid #334155 !important;
+}
+.stTabs [data-baseweb="tab"] {
+    background-color: #0F172A !important;
+    color: #94A3B8 !important;
+}
+.stTabs [aria-selected="true"] {
+    color: #93C5FD !important;
+    border-bottom: 2px solid #93C5FD !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #1E293B !important;
+    border: 1.5px solid #334155 !important;
+    color: #93C5FD !important;
+}
+.stButton > button:hover {
+    background-color: #1B3A6B !important;
+    color: #FFFFFF !important;
+}
+
+/* Text inputs, selects, number inputs */
+[data-testid="stTextInput"] input,
+[data-testid="stNumberInput"] input,
+[data-testid="stSelectbox"] > div > div {
+    background-color: #1E293B !important;
+    color: #F1F5F9 !important;
+    border-color: #334155 !important;
+}
+
+/* Markdown text & captions */
+.stMarkdown p, .stMarkdown div, .stMarkdown li,
+p, label, span {
+    color: #CBD5E1 !important;
+}
+.stCaption p { color: #64748B !important; }
+
+/* Download button */
+[data-testid="stDownloadButton"] > button {
+    background-color: #1E293B !important;
+    border: 1.5px solid #334155 !important;
+    color: #93C5FD !important;
 }
 </style>
 """
