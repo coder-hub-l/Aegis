@@ -1,9 +1,14 @@
 # core/explainer.py
+"""Plain-language AI explainability and actionable remediation engine powered by Gemini.
+
+Translates deterministic rule results into simple, spoken English tailored for rural citizens and TTS narration.
+"""
 import os
 from dotenv import load_dotenv
 from core.models import SchemeResult
 
 load_dotenv()
+
 
 # ── API Key: supports both Streamlit Cloud secrets and local .env ─────────
 def _get_api_key() -> str:
@@ -16,6 +21,7 @@ def _get_api_key() -> str:
     except Exception:
         pass
     return os.getenv("GEMINI_API_KEY", "")
+
 
 # Safely import Gemini — falls back to deterministic messages if package missing
 try:
@@ -45,94 +51,115 @@ def get_model():
 
 def generate_explanation(result: SchemeResult) -> str:
     """
-    Generate a plain-language explanation of WHY the citizen got this result.
-    Based only on the rule outcomes — NOT on speculative knowledge.
+    Generate a plain-spoken explanation of WHY the citizen got this result.
+    Tailored for rural citizens and speech-synthesized audio narration (Class 10 reading level).
     """
     model = get_model()
 
     if result.status == "eligible":
         rules_text = "\n".join(f"- {r}" for r in result.matched_rules)
         if not model:
-            return f"You meet all statutory requirements for {result.name}, including occupation, documentation, and category criteria."
-        prompt = f"""You are a government welfare advisor. A citizen has been found ELIGIBLE for {result.name}.
+            return f"Good news! You qualify for {result.name}. Your details match all government rules for this scheme."
 
-The following conditions were all met:
+        prompt = f"""You are a friendly government welfare helper explaining a result to a rural citizen.
+
+The citizen qualifies for {result.name}.
+
+Conditions they met:
 {rules_text}
 
-Write exactly 2 sentences in simple English explaining why they qualify.
-Be factual. Only refer to the conditions listed above. Do not add any new conditions."""
+Write 2 short, simple sentences in plain spoken English that a person with Class 10 education can easily understand when it is read aloud to them.
+Use simple, everyday words. No legal terms. No jargon.
+Start with: "Good news! You qualify for {result.name}."
+Keep each sentence under 20 words."""
 
     elif result.status == "almost":
         failed_text = "\n".join(f"- {r}" for r in result.failed_rules)
         matched_text = "\n".join(f"- {r}" for r in result.matched_rules)
         if not model:
-            return f"You meet almost all requirements for {result.name}, but currently miss one condition: {result.failed_rules[0] if result.failed_rules else 'Pending requirement'}."
-        prompt = f"""You are a government welfare advisor. A citizen ALMOST qualifies for {result.name}.
+            missed_summary = ", ".join(result.failed_rules) if result.failed_rules else "one document condition"
+            return f"You are very close to qualifying for {result.name}! You only need to complete: {missed_summary}."
 
+        prompt = f"""You are a friendly government welfare helper talking to a rural citizen.
+
+They almost qualify for {result.name}.
 Conditions they met:
 {matched_text}
 
-One condition they did NOT meet:
+Conditions they missed:
 {failed_text}
 
-Write exactly 2 sentences explaining why they almost qualify. Be factual and specific."""
+Write 2 short, simple sentences in plain spoken English encouraging them. 
+Tell them they are very close and clearly mention what condition is pending.
+No legal terms. Under 20 words per sentence."""
 
     else:  # ineligible
         failed_text = "\n".join(f"- {r}" for r in result.failed_rules)
         if not model:
-            return f"You do not qualify for {result.name} due to unmet statutory conditions: {', '.join(result.failed_rules)}."
-        prompt = f"""You are a government welfare advisor. A citizen does NOT qualify for {result.name}.
+            reasons = "; ".join(result.failed_rules) if result.failed_rules else "official rule criteria"
+            return f"You do not qualify for {result.name} at this time because: {reasons}."
 
-Conditions they failed:
+        prompt = f"""You are a friendly government welfare helper.
+
+The citizen does not qualify for {result.name}.
+Reasons:
 {failed_text}
 
-Write exactly 1 sentence explaining why they are ineligible. Be factual. Do not suggest they appeal."""
+Write exactly 1 simple sentence in plain spoken English explaining why.
+No legal terms. Under 20 words. Be kind, honest, and factual."""
 
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
-    except Exception as e:
-        # Fallback to deterministic clean message if offline or quota reached
+    except Exception:
         if result.status == "eligible":
-            return f"You meet all verified statutory requirements for {result.name}."
+            return f"Good news! You qualify for {result.name}. Your details match all government rules."
         elif result.status == "almost":
-            return f"You qualify for most criteria but miss one specific condition: {result.failed_rules[0] if result.failed_rules else ''}."
+            missed_summary = ", ".join(result.failed_rules) if result.failed_rules else "pending condition"
+            return f"You are very close to qualifying for {result.name}! The only pending item is: {missed_summary}."
         else:
-            return f"You are currently ineligible for {result.name} based on official scheme rules."
+            return f"You do not qualify for {result.name} based on current official guidelines."
 
 
 def generate_almost_advice(result: SchemeResult) -> str:
     """
-    For "almost" results only: generate concrete actionable steps to become eligible.
+    For "almost" results: generate practical, high-empathy remediation steps.
+    Highlights the financial maximizer, shows all unmet conditions, and provides low-friction local action.
     """
     if result.status != "almost":
         return ""
 
     failed_text = "\n".join(f"- {r}" for r in result.failed_rules)
-    hints_text = "\n".join(f"- {h}" for h in result.hints) if result.hints else "No specific hints available."
+    hints_text = "\n".join(f"- {h}" for h in result.hints) if result.hints else "Visit your nearest Gram Panchayat or CSC center."
     model = get_model()
 
     if not model:
-        if result.hints:
-            return "Action needed: " + " ".join(result.hints)
-        return f"Please resolve the following requirement: {result.failed_rules[0] if result.failed_rules else ''}."
+        all_hints = " ".join(result.hints) if result.hints else "Ask your local Gram Sevak or visit the nearest Aaple Sarkar Seva Kendra."
+        return f"You are very close to this benefit! Here is what to do: {all_hints} It is free of cost — do not pay any agents."
 
-    prompt = f"""You are a helpful government welfare officer helping a citizen become eligible for {result.name}.
+    prompt = f"""You are an empathetic, practical rural welfare counselor in Maharashtra talking to a citizen.
 
-The one condition they are failing:
+Scheme: {result.name}
+Benefit: {result.description}
+
+All conditions they currently miss:
 {failed_text}
 
-Official guidance on this condition:
+Official department guidance & shortcuts:
 {hints_text}
 
-Write 2–3 specific, actionable steps this person can take to meet this condition.
-Be practical. Mention specific document names or government offices (e.g., CSC center, Aaple Sarkar, Tahsildar) where relevant.
-Do not give general advice. Focus strictly on resolving the failed condition."""
+Write 2 to 3 very simple sentences in plain spoken English telling them exactly what to do.
+Guidelines:
+1. Speak warmly like you are talking in person. No legal jargon.
+2. Clearly mention what they need to resolve so there are no surprises.
+3. Tell them the easiest local place to go (e.g. Gram Panchayat, Gram Sevak, or Aaple Sarkar Seva Kendra).
+4. Mention that government enrollment is free and advise them not to pay brokers or touts.
+5. Keep the total response under 50 words so it sounds natural when read aloud."""
 
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
-    except Exception as e:
+    except Exception:
         if result.hints:
-            return " ".join(result.hints)
-        return f"Verify your documents with the local Tahsildar or CSC center to resolve: {result.failed_rules[0] if result.failed_rules else ''}."
+            return " ".join(result.hints) + " Visit your local Gram Panchayat office; this service is free."
+        return f"Please resolve the pending requirement with your local Gram Sevak: {', '.join(result.failed_rules)}."

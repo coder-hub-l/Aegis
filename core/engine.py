@@ -157,7 +157,7 @@ def evaluate_scheme(profile: CitizenProfile, scheme: Dict[str, Any]) -> SchemeRe
                     hints.append(hints_data[field_name])
 
     # ── Determine final status ─────────────────────────────────────
-    # Hard statutory disqualifiers that can never be "almost" eligible:
+    # Hard statutory eliminators that can never be "almost" eligible:
     gender_failed = any("Gender must be" in f for f in failed)
     occupation_failed = any("Occupation must be" in f for f in failed)
     pucca_failed = any("Owns Pucca House must be False" in f for f in failed)

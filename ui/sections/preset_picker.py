@@ -1,97 +1,156 @@
 # ui/sections/preset_picker.py
-"""Renders the Step 1 demo persona quick-load buttons and form reset."""
+"""Renders the optional demo persona quick-load buttons inside an expander with distinct blue shades."""
 import streamlit as st
 from ui.config.strings import t
 from ui.config.presets import PRESETS, DEFAULT_FORM_DATA
 
 
-def _inject_active_shadow(active_preset: str) -> None:
-    """Inject a blue+grey box-shadow on whichever preset column is active."""
-    col_index = {"ramesh": 1, "sunita": 2, "vikram": 3}.get(active_preset, 0)
-    if not col_index:
-        return
+def _inject_preset_styles(active_preset: str) -> None:
+    """Inject 3 distinct shades of blue for the preset buttons and active indicator."""
+    active_col = {"ramesh": 1, "sunita": 2, "vikram": 3}.get(active_preset, 0)
+
+    shadow_rule = ""
+    if active_col == 1:
+        shadow_rule = """
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(1) .stButton > button {
+            box-shadow: 0 0 0 3px #1E3A8A, 0 4px 14px rgba(30, 58, 138, 0.40) !important;
+            background-color: #EFF6FF !important;
+            font-weight: 700 !important;
+        }
+        """
+    elif active_col == 2:
+        shadow_rule = """
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(2) .stButton > button {
+            box-shadow: 0 0 0 3px #2563EB, 0 4px 14px rgba(37, 99, 235, 0.40) !important;
+            background-color: #EFF6FF !important;
+            font-weight: 700 !important;
+        }
+        """
+    elif active_col == 3:
+        shadow_rule = """
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(3) .stButton > button {
+            box-shadow: 0 0 0 3px #0284C7, 0 4px 14px rgba(2, 132, 199, 0.40) !important;
+            background-color: #F0F9FF !important;
+            font-weight: 700 !important;
+        }
+        """
+
     st.markdown(
         f"""<style>
-        [data-testid="stHorizontalBlock"]:first-of-type
-        [data-testid="column"]:nth-child({col_index})
-        .stButton > button {{
-            box-shadow: 0 0 0 3px #1B3A6B,
-                        0 4px 14px rgba(100, 116, 139, 0.40) !important;
+        /* Preset 1: Ramesh Patil - Deep Navy Blue */
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(1) .stButton > button {{
+            border: 2px solid #1E3A8A !important;
+            color: #1E3A8A !important;
+            background-color: #FFFFFF !important;
         }}
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(1) .stButton > button:hover {{
+            background-color: #1E3A8A !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Preset 2: Sunita Kamble - Vibrant Royal Blue */
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(2) .stButton > button {{
+            border: 2px solid #2563EB !important;
+            color: #2563EB !important;
+            background-color: #FFFFFF !important;
+        }}
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(2) .stButton > button:hover {{
+            background-color: #2563EB !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Preset 3: Vikram Joshi - Ocean / Steel Blue */
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(3) .stButton > button {{
+            border: 2px solid #0284C7 !important;
+            color: #0284C7 !important;
+            background-color: #FFFFFF !important;
+        }}
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(3) .stButton > button:hover {{
+            background-color: #0284C7 !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* Reset Button */
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(4) .stButton > button {{
+            border: 1.5px solid #64748B !important;
+            color: #64748B !important;
+        }}
+        [data-testid="stExpander"] [data-testid="column"]:nth-child(4) .stButton > button:hover {{
+            background-color: #64748B !important;
+            color: #FFFFFF !important;
+        }}
+
+        {shadow_rule}
         </style>""",
         unsafe_allow_html=True,
     )
 
 
 def render_preset_picker(is_marathi: bool):
-    """Render the preset buttons banner and click handlers."""
+    """Render the preset buttons inside an optional expander with 3 distinct shades of blue."""
     active = st.session_state.get("active_preset")
-    _inject_active_shadow(active)
+    _inject_preset_styles(active)
 
-    st.markdown(
-        f"""
-        <div style="background-color:#FFFFFF; border:1px solid #D1D5DB; border-radius:8px;
-                    padding:20px 24px; margin-bottom:16px;">
-            <div style="display:flex; align-items:center; gap:10px;
-                        border-bottom:1px solid #E5E7EB; padding-bottom:12px; margin-bottom:12px;">
-                <div style="width:26px;height:26px;background:#1B3A6B;color:#FFFFFF;border-radius:50%;
-                            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">
-                    1
-                </div>
-                <div style="font-size:15px;font-weight:700;color:#1B3A6B;">{t('demo_heading', is_marathi)}</div>
-            </div>
-            <p style="font-size:13px;color:#374151;margin:0;">{t('demo_caption', is_marathi)}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    expander_title = (
+        "👤 नमुना नागरिक प्रोफाइल पहा (ऐच्छिक डेमो प्रोफाइल)"
+        if is_marathi else
+        "👤 Try a Sample Citizen Profile (Optional Demo Profiles)"
     )
 
-    pc1, pc2, pc3, pc4 = st.columns([2, 2, 2, 1])
+    with st.expander(expander_title, expanded=bool(active)):
+        caption_text = (
+            "ही प्रात्यक्षिकासाठी उदाहरणे आहेत. आपण खालील अर्ज स्वतः देखील भरू शकता."
+            if is_marathi else
+            "These are example profiles for demonstration. You can also fill the form below manually."
+        )
+        st.caption(caption_text)
 
-    with pc1:
-        p = PRESETS["ramesh"]
-        lbl = p["label_mr"] if is_marathi else p["label_en"]
-        note = p["note_mr"] if is_marathi else p["note_en"]
-        exp = p["expected_mr"] if is_marathi else p["expected_en"]
-        if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
-            st.session_state["form_data"] = p["data"].copy()
-            st.session_state["active_preset"] = "ramesh"
-            st.rerun()
-        st.caption(f"{note}")
-        st.caption(f"Expected — {exp}")
+        pc1, pc2, pc3, pc4 = st.columns([2, 2, 2, 1])
 
-    with pc2:
-        p = PRESETS["sunita"]
-        lbl = p["label_mr"] if is_marathi else p["label_en"]
-        note = p["note_mr"] if is_marathi else p["note_en"]
-        exp = p["expected_mr"] if is_marathi else p["expected_en"]
-        if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
-            st.session_state["form_data"] = p["data"].copy()
-            st.session_state["active_preset"] = "sunita"
-            st.rerun()
-        st.caption(f"{note}")
-        st.caption(f"Expected — {exp}")
+        with pc1:
+            p = PRESETS["ramesh"]
+            lbl = p["label_mr"] if is_marathi else p["label_en"]
+            note = p["note_mr"] if is_marathi else p["note_en"]
+            exp = p["expected_mr"] if is_marathi else p["expected_en"]
+            if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}", key="preset_ramesh_btn"):
+                st.session_state["form_data"] = p["data"].copy()
+                st.session_state["active_preset"] = "ramesh"
+                st.rerun()
+            st.caption(f"**{note}**")
+            st.caption(f"Expected: {exp}")
 
-    with pc3:
-        p = PRESETS["vikram"]
-        lbl = p["label_mr"] if is_marathi else p["label_en"]
-        note = p["note_mr"] if is_marathi else p["note_en"]
-        exp = p["expected_mr"] if is_marathi else p["expected_en"]
-        if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}"):
-            st.session_state["form_data"] = p["data"].copy()
-            st.session_state["active_preset"] = "vikram"
-            st.rerun()
-        st.caption(f"{note}")
-        st.caption(f"Expected — {exp}")
+        with pc2:
+            p = PRESETS["sunita"]
+            lbl = p["label_mr"] if is_marathi else p["label_en"]
+            note = p["note_mr"] if is_marathi else p["note_en"]
+            exp = p["expected_mr"] if is_marathi else p["expected_en"]
+            if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}", key="preset_sunita_btn"):
+                st.session_state["form_data"] = p["data"].copy()
+                st.session_state["active_preset"] = "sunita"
+                st.rerun()
+            st.caption(f"**{note}**")
+            st.caption(f"Expected: {exp}")
 
-    with pc4:
-        st.write("")
-        if st.button(t("reset", is_marathi), use_container_width=True):
-            st.session_state["form_data"] = dict(
-                name="", age=30, gender="male", annual_income=100000.0,
-                caste_category="general", land_holding_hectares=0.0,
-                occupation="farmer", has_bank_account=True, has_aadhaar=True,
-                owns_pucca_house=False
-            )
-            st.session_state["active_preset"] = None
-            st.rerun()
+        with pc3:
+            p = PRESETS["vikram"]
+            lbl = p["label_mr"] if is_marathi else p["label_en"]
+            note = p["note_mr"] if is_marathi else p["note_en"]
+            exp = p["expected_mr"] if is_marathi else p["expected_en"]
+            if st.button(lbl, use_container_width=True, help=f"{note}\nExpected: {exp}", key="preset_vikram_btn"):
+                st.session_state["form_data"] = p["data"].copy()
+                st.session_state["active_preset"] = "vikram"
+                st.rerun()
+            st.caption(f"**{note}**")
+            st.caption(f"Expected: {exp}")
+
+        with pc4:
+            st.write("")
+            if st.button(t("reset", is_marathi), use_container_width=True, key="preset_reset_btn"):
+                st.session_state["form_data"] = dict(
+                    name="", age=30, gender="male", annual_income=100000.0,
+                    caste_category="general", land_holding_hectares=0.0,
+                    occupation="farmer", has_bank_account=True, has_aadhaar=True,
+                    owns_pucca_house=False
+                )
+                st.session_state["active_preset"] = None
+                st.rerun()

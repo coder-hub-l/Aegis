@@ -4,6 +4,7 @@ import streamlit as st
 from pathlib import Path
 from typing import Optional, Tuple, Any
 from core.models import CitizenProfile
+from ui.config.strings import GENDER_LABELS, OCCUPATION_LABELS, CASTE_LABELS
 from data.constants import INCOME_CERTIFICATE_URL, AADHAAR_ENROLLMENT_URL, JAN_DHAN_URL
 
 # Resolve official Maharashtra seal logo relative to project root
@@ -43,7 +44,7 @@ def _render_portal_sync_badge(is_marathi: bool) -> None:
             colour, icon, label = "#B45309", "&#9888;", f"Portal Sync: {ok_count}/{total} OK"
             bg, border = "#FFFBEB", "#FDE68A"
 
-        display_label = ("लाइव पोर्टल: कनेक्टेड" if all_ok else f"पोर्टल: {ok_count}/{total} OK") \
+        display_label = ("थेट पोर्टल जोडणी: सक्रिय" if all_ok else f"पोर्टल जोडणी: {ok_count}/{total} उपलब्ध") \
                         if is_marathi else label
 
         st.markdown(
@@ -83,17 +84,19 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
             st.image(str(_LOGO_PATH), width=75)
 
         # ── 2. Header Title ──────────────────────────────────────────────
+        sub_title_1 = "महाराष्ट्र शासन" if is_marathi else "Government of Maharashtra"
+        sub_title_2 = "कल्याणकारी योजना पात्रता प्रणाली" if is_marathi else "Scheme Eligibility Navigator"
         st.markdown(
-            """
+            f"""
             <div style="padding:4px 0 14px 0; border-bottom:2px solid #E5E7EB; margin-bottom:14px;">
                 <div style="font-size:15px; font-weight:800; color:#1B3A6B; line-height:1.3;">
                     महाराष्ट्र शासन
                 </div>
                 <div style="font-size:11px; color:#6B7280; font-weight:600; margin-top:2px;">
-                    Government of Maharashtra
+                    {sub_title_1}
                 </div>
                 <div style="font-size:11px; color:#6B7280;">
-                    Scheme Eligibility Navigator
+                    {sub_title_2}
                 </div>
             </div>
             """,
@@ -107,7 +110,7 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
         lang = st.radio(
             "Language / भाषा",
             ["English", "मराठी"],
-            index=0,
+            index=0 if not is_marathi else 1,
             key="unified_app_lang"
         )
         is_marathi = (lang == "मराठी")
@@ -133,21 +136,28 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
                 f"</div>",
                 unsafe_allow_html=True,
             )
-            p_name = _safe_get(profile, "name", "Applicant")
+            raw_name = _safe_get(profile, "name", "Applicant")
+            p_name = raw_name if raw_name else ("अर्जदार" if is_marathi else "Applicant")
             p_age = _safe_get(profile, "age", 30)
-            p_gender = str(_safe_get(profile, "gender", "other")).capitalize()
+
+            raw_gender = str(_safe_get(profile, "gender", "other")).lower()
+            p_gender = GENDER_LABELS.get(raw_gender, (raw_gender, raw_gender))[1 if is_marathi else 0]
+
             p_income = _safe_get(profile, "annual_income", 0)
-            p_caste = str(_safe_get(profile, "caste_category", "general")).upper()
+            raw_caste = str(_safe_get(profile, "caste_category", "general")).lower()
+            p_caste = CASTE_LABELS.get(raw_caste, (raw_caste.upper(), raw_caste.upper()))[1 if is_marathi else 0]
+
             p_land = _safe_get(profile, "land_holding_hectares", 0.0)
-            p_occ = str(_safe_get(profile, "occupation", "farmer")).replace("_", " ").capitalize()
+            raw_occ = str(_safe_get(profile, "occupation", "farmer")).lower()
+            p_occ = OCCUPATION_LABELS.get(raw_occ, (raw_occ, raw_occ))[1 if is_marathi else 0]
 
             rows = [
                 ("Name"       if not is_marathi else "नाव",             p_name),
                 ("Age"        if not is_marathi else "वय",              f"{p_age} years" if not is_marathi else f"{p_age} वर्षे"),
                 ("Gender"     if not is_marathi else "लिंग",            p_gender),
-                ("Income"     if not is_marathi else "वार्षिक उत्पन्न", f"Rs. {float(p_income):,.0f}"),
+                ("Income"     if not is_marathi else "वार्षिक उत्पन्न", f"Rs. {float(p_income):,.0f}" if not is_marathi else f"₹ {float(p_income):,.0f}"),
                 ("Caste"      if not is_marathi else "जात",             p_caste),
-                ("Land"       if not is_marathi else "जमीन",            f"{p_land} Ha"),
+                ("Land"       if not is_marathi else "जमीन",            f"{p_land} Ha" if not is_marathi else f"{p_land} हेक्टर"),
                 ("Occupation" if not is_marathi else "व्यवसाय",         p_occ),
             ]
             table_rows = "".join(
@@ -175,13 +185,23 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
             f"</div>",
             unsafe_allow_html=True,
         )
-        portals = [
-            ("MahaDBT — Scheme Applications", "https://mahadbt.maharashtra.gov.in"),
-            ("Aaple Sarkar — Certificates",   INCOME_CERTIFICATE_URL),
-            ("UIDAI — Aadhaar Enrolment",     AADHAAR_ENROLLMENT_URL),
-            ("PM Jan Dhan — Bank Accounts",   JAN_DHAN_URL),
-            ("PM-KISAN Official Portal",      "https://pmkisan.gov.in"),
-        ]
+        if is_marathi:
+            portals = [
+                ("महाडीबीटी — शासकीय योजना अर्ज", "https://mahadbt.maharashtra.gov.in"),
+                ("आपले सरकार — दाखले व प्रमाणपत्रे", INCOME_CERTIFICATE_URL),
+                ("युआयडीएआय — आधार नोंदणी केंद्र", AADHAAR_ENROLLMENT_URL),
+                ("पीएम जन धन — शून्य शिल्लक बँक खाते", JAN_DHAN_URL),
+                ("पीएम-किसान — अधिकृत पोर्टल", "https://pmkisan.gov.in"),
+            ]
+        else:
+            portals = [
+                ("MahaDBT — Scheme Applications", "https://mahadbt.maharashtra.gov.in"),
+                ("Aaple Sarkar — Certificates",   INCOME_CERTIFICATE_URL),
+                ("UIDAI — Aadhaar Enrolment",     AADHAAR_ENROLLMENT_URL),
+                ("PM Jan Dhan — Bank Accounts",   JAN_DHAN_URL),
+                ("PM-KISAN Official Portal",      "https://pmkisan.gov.in"),
+            ]
+
         for label, url in portals:
             st.markdown(
                 f"<div style='padding:6px 0; border-bottom:1px solid #F3F4F6;'>"
@@ -197,21 +217,35 @@ def render_sidebar(profile: Optional[CitizenProfile] = None) -> Tuple[str, bool,
         )
 
         # ── 8. Technical Architecture Note ───────────────────────────────
-        with st.expander("System Architecture" if not is_marathi else "प्रणाली रचना"):
-            st.markdown(
-                """
-                <div style="font-size:12px; color:#374151; line-height:1.7;">
-                    <strong style="color:#1B3A6B;">Deterministic Rule Engine</strong><br>
-                    All eligibility decisions are executed in pure Python based on
-                    verified Maharashtra gazette conditions.
-                    <br><br>
-                    <strong style="color:#1B3A6B;">Zero LLM Hallucination</strong><br>
-                    The AI model never decides eligibility. It only translates the
-                    engine's binary verdict into plain-language explanations and
-                    actionable remediation advice.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        with st.expander("System Architecture" if not is_marathi else "प्रणाली रचना (Architecture)"):
+            if is_marathi:
+                st.markdown(
+                    """
+                    <div style="font-size:12px; color:#374151; line-height:1.7;">
+                        <strong style="color:#1B3A6B;">अचूक नियम इंजिन (Deterministic Engine)</strong><br>
+                        सर्व पात्रता निर्णय महाराष्ट्र शासनाच्या अधिकृत राजपत्रातील नियमांनुसार थेट अल्गोरिदमद्वारे घेतले जातात.
+                        <br><br>
+                        <strong style="color:#1B3A6B;">शून्य दिशाभूल (Zero AI Hallucination)</strong><br>
+                        कृत्रिम बुद्धिमत्ता (AI) पात्रतेचा निर्णय कधीही घेत नाही. ती केवळ अंतिम निकालाचे स्पष्टीकरण सोप्या मराठी भाषेत समजावून सांगते.
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    """
+                    <div style="font-size:12px; color:#374151; line-height:1.7;">
+                        <strong style="color:#1B3A6B;">Deterministic Rule Engine</strong><br>
+                        All eligibility decisions are executed in pure Python based on
+                        verified Maharashtra gazette conditions.
+                        <br><br>
+                        <strong style="color:#1B3A6B;">Zero LLM Hallucination</strong><br>
+                        The AI model never decides eligibility. It only translates the
+                        engine's binary verdict into plain-language explanations and
+                        actionable remediation advice.
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
     return (lang, is_marathi, dark_mode)

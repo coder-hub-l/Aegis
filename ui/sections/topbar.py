@@ -1,11 +1,14 @@
 # ui/sections/topbar.py
-"""Renders the official Government of Maharashtra header topbar."""
+"""Renders the official Government of Maharashtra header topbar with Marathi badges."""
 import streamlit as st
 from ui.config.strings import t
 
 
 def render_topbar(is_marathi: bool):
-    """Render the top government navigation bar."""
+    """Render the top government navigation bar with localized badges."""
+    badge1 = "अचूक नियम इंजिन" if is_marathi else "Deterministic Engine"
+    badge2 = "अधिकृत राजपत्र माहिती" if is_marathi else "Official Gazette Data"
+
     st.markdown(
         f"""
         <div class="gov-topbar">
@@ -22,8 +25,8 @@ def render_topbar(is_marathi: bool):
                 </div>
             </div>
             <div style="display:flex;gap:8px;">
-                <span class="gov-badge">Deterministic Engine</span>
-                <span class="gov-badge">Official Gazette Data</span>
+                <span class="gov-badge">{badge1}</span>
+                <span class="gov-badge">{badge2}</span>
             </div>
         </div>
         """,

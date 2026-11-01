@@ -31,7 +31,7 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
         st.metric("Eligible Schemes" if not is_marathi else "पात्र योजना", len(eligible))
     with m3:
         st.metric("Almost Eligible" if not is_marathi else "जवळपास पात्र", len(almost),
-                  delta="Near-Miss" if almost else None)
+                  delta="Near-Miss" if (almost and not is_marathi) else ("१ अट अपूर्ण" if almost else None))
     with m4:
         st.metric("Ineligible" if not is_marathi else "अपात्र योजना", len(ineligible))
 
@@ -40,8 +40,8 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
     da, db, dc = st.columns([2.2, 1.2, 1.2])
     with da:
         search_q = st.text_input(
-            "Filter by scheme name or department keyword",
-            placeholder="e.g. kisan, bahin, awas, pension…",
+            "Filter by scheme name or department keyword" if not is_marathi else "योजनेचे नाव किंवा विभागानुसार शोधा",
+            placeholder="e.g. kisan, bahin, awas, pension…" if not is_marathi else "उदा. किसान, बहीण, आवास, पेन्शन…",
             key="results_search"
         ).strip().lower()
     with db:
@@ -68,9 +68,9 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
     # ── Categorized Tabs ──────────────────────────────────────────────────
     st.markdown("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
     tab1, tab2, tab3, tab4 = st.tabs([
-        f"Eligible ({len(f_elig)})" if not is_marathi else f"पात्र ({len(f_elig)})",
+        f"Eligible ({len(f_elig)})" if not is_marathi else f"पात्र योजना ({len(f_elig)})",
         f"Almost Eligible ({len(f_alm)})" if not is_marathi else f"जवळपास पात्र ({len(f_alm)})",
-        f"Ineligible ({len(f_inel)})" if not is_marathi else f"अपात्र ({len(f_inel)})",
+        f"Ineligible ({len(f_inel)})" if not is_marathi else f"अपात्र योजना ({len(f_inel)})",
         "All Schemes" if not is_marathi else "सर्व योजना",
     ])
 
@@ -79,7 +79,7 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
             for r in f_elig:
                 render_eligible_card(r, is_marathi)
         else:
-            st.info("No eligible schemes for this profile.")
+            st.info("No eligible schemes for this profile." if not is_marathi else "या प्रोफाईलसाठी कोणतीही पात्र योजना आढळली नाही.")
 
     with tab2:
         if f_alm:
@@ -97,16 +97,16 @@ def render_results(results: List[SchemeResult], lang: str = "English", profile: 
             for r in f_alm:
                 render_almost_card(r, is_marathi)
         else:
-            st.info("No near-miss schemes for this profile.")
+            st.info("No near-miss schemes for this profile." if not is_marathi else "या प्रोफाईलसाठी कोणतीही जवळपास पात्र योजना नाही.")
 
     with tab3:
         if f_inel:
             st.caption("These schemes failed legal criteria." if not is_marathi
-                       else "या योजनांसाठी शासकीय अटी पूर्ण झालेल्या नाहीत.")
+                       else "या योजनांसाठी अधिकृत शासकीय अटी पूर्ण झालेल्या नाहीत.")
             for r in f_inel:
                 render_ineligible_card(r, is_marathi)
         else:
-            st.info("No ineligible schemes.")
+            st.info("No ineligible schemes." if not is_marathi else "कोणतीही अपात्र योजना नाही.")
 
     with tab4:
         for r in results:
